@@ -17,10 +17,9 @@ const UiSchema = {
         "ui:autofocus": true,
         "ui:help": "The api-key provided by carrier."
     }
-
 }
 
-export const SettingFormSchema = {
+export const SettingsFormSchema = {
     JsonSchema,
     UiSchema
 }

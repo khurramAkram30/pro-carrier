@@ -2,20 +2,23 @@
   "name": "pro-carrier",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "connect start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@shipengine/connect": "^4.7.0",
     "@shipengine/connect-carrier-api": "^4.8.7",
     "@shipengine/connect-runtime": "^4.6.2",
     "connect-carrier-api-utils": "^4.4.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@shipengine/connect": "^4.7.0"
+    "axios": "^1.7.2"
   }
 }
