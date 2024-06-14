@@ -1,11 +1,11 @@
 
 export interface IRegisterRequest {
     Apikey: string;
-    Command: 'OrderShipment';
+    Command: string;
     Shipment:  ShipmentMetadata
 } 
 
 interface ShipmentMetadata {
-    LabelOption : "LabelOption";
+    LabelOption : string;
     ShipperReference?: string
 }

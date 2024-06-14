@@ -10,7 +10,7 @@ export const mapRequest = (registration_info): AxiosRequestConfig => {
         Command: "OrderShipment",
         Shipment:
         {
-            LabelOption: "LabelOption",
+            LabelOption: "System",
             ShipperReference: ""
         }
     } 
