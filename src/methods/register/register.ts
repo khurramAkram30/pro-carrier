@@ -6,20 +6,22 @@ import { ProcessRequest } from "../../api/api-communicator";
 import { mapResponse } from "./map-response";
 import { InternalReqRegister } from "../../helpers/internal-models";
 import { HttpStatusCode, UnauthorizedError } from "@shipengine/connect-runtime";
+import { getCustomError } from "../../helpers/utils";
 
 
 export const Register = async (request: RegisterRequest): Promise<RegisterResponse> => {
-    const registration_info = <InternalReqRegister>request.registration_info;
-    validate(registration_info);
+    const registrationInfo = <InternalReqRegister>request.registration_info || {};
+    validate(registrationInfo);
+    const mapedRequest = mapRequest(registrationInfo);
     try {
-        const thirdParty = mapRequest(registration_info);
-        await ProcessRequest(thirdParty, CarrierOperation.Register);
+        const response = await ProcessRequest(mapedRequest, CarrierOperation.Register);
+        getCustomError(response);
 
     } catch (error) {
         if (error.statusCode === HttpStatusCode.UnAuthorized) {
             throw new UnauthorizedError(error.details[0].message);
         }   
     }
-
-    return mapResponse(registration_info);
+    
+    return mapResponse(registrationInfo);
 }

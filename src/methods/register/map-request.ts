@@ -7,17 +7,16 @@ const API_URL = TEST_URL;
 export const mapRequest = (registration_info): AxiosRequestConfig => {
     const registerRequest: IRegisterRequest = {
         Apikey: registration_info.api_key,
-        Command: "OrderShipment",
+        Command: 'OrderShipment',
         Shipment:
         {
-            LabelOption: "System",
-            ShipperReference: ""
+            LabelOption: 'System',
+            ShipperReference: ''
         }
     } 
 
     return {
-        responseType: "json",
-        method: "POST",
+        method: 'POST',
         url:API_URL,
         data:registerRequest
     }

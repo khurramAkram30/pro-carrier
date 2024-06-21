@@ -1,3 +1,3 @@
 export interface InternalReqRegister {
-    api_key: string;
+    api_key?: string;
 }

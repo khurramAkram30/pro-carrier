@@ -1,8 +1,9 @@
-import { Register } from "./methods/register/register";
+import { Register, CreateLabel } from "./methods/";
 import { Metadata } from "./definitions";
 import { CarrierAppDefinition } from "@shipengine/connect-carrier-api";
 
 export default {
     Metadata,
-    Register
+    Register,
+    CreateLabel
 } satisfies CarrierAppDefinition

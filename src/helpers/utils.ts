@@ -3,14 +3,13 @@ import { HttpStatusCode } from "axios";
 
 
 export const getCustomError = (err: any) => {
-    const customError = err?.Error;
+    const customError = err.Error;
     if (customError === "Access Denied") {
         throw new UnauthorizedError('Error from Carrier Api', [
             {
                 errorCode: err.ErrorLevel,
                 message: "Access denied"
             }
-
         ]);
     }
 };
