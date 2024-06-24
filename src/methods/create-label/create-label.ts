@@ -1,6 +1,7 @@
 import { CreateLabelRequest, CreateLabelResponse } from "@shipengine/connect-carrier-api";
+import { mapRequest } from "./map-request";
 
 export const CreateLabel = async (request: CreateLabelRequest): Promise<CreateLabelResponse> => {
-    console.log(request);
+    const mapedRequest = mapRequest(request); 
     return;
 }

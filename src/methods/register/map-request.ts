@@ -1,6 +1,6 @@
 import { IRegisterRequest } from "../../api/models/register-interface"; 
 import { TEST_URL } from "../../helpers/constants";
-import { Axios, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
+import { Axios, AxiosRequestConfig } from 'axios';
 
 const API_URL = TEST_URL;
 
