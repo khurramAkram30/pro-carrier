@@ -11,7 +11,7 @@ import { getCustomError } from "../../helpers/utils";
 
 export const Register = async (request: RegisterRequest): Promise<RegisterResponse> => {
     const registrationInfo = <InternalReqRegister>request.registration_info || {};
-    validate(registrationInfo);
+    validate(registrationInfo); 
     const mapedRequest = mapRequest(registrationInfo);
     try {
         const response = await ProcessRequest(mapedRequest, CarrierOperation.Register);
