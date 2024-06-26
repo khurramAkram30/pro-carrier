@@ -1,6 +1,6 @@
-import { Axios, AxiosRequestConfig } from "axios"
+import { AxiosRequestConfig } from "axios"
 import { CUSTOM_CONTENTS, CarrierOperation, SERVICE_API_CODES, TEST_URL, TRADE_CODE } from "../../helpers/constants";
-import { ConsigneeAddress, CreateLabelReq, Products, SenderAddress, Shipments} from "../../api/models/create-label-interface";
+import { CreateLabelReq, Products, Shipments} from "../../api/models/create-label-request";
 import { 
     getAuthentication, 
     getCommand, 
@@ -24,9 +24,9 @@ export const mapRequest = (request: CreateLabelRequest): AxiosRequestConfig => {
 }
 
 const orderShipment = (data: CreateLabelRequest): CreateLabelReq => ({
-        ApiKey: getAuthentication(data.metadata),
+        Apikey: getAuthentication(data.metadata),
         Command: getCommand(CarrierOperation.CreateLabel),
-        Shipments: getShipment(data)
+        Shipment: getShipment(data)
 });
 
 const getShipment = (data : CreateLabelRequest) : Shipments  => {
@@ -56,9 +56,10 @@ const getShipment = (data : CreateLabelRequest) : Shipments  => {
 
 const getCustoms = (packageCustoms: Customs): number => {
     const customItem = packageCustoms?.customs_items;
-    let totalValue: number ;
-    customItem.map((val, index) => {
-        totalValue += Number(customItem[index]?.value?.amount) * Number(customItem[index]?.quantity);
+    let totalValue : number = 0;
+    customItem.map(items => {
+        totalValue += parseFloat(items.value?.amount) * (items.quantity);
+        
     });
     return totalValue;
 };
@@ -74,7 +75,7 @@ const getCurrency = (packageCustoms: Customs): string => {
 };
 
 const getCustomsDuty = (packageCustoms:Customs, ser_code:string): string => {
-    const termsOfTradeCode: string = packageCustoms.terms_of_trade_code.toUpperCase();
+    const termsOfTradeCode: string = packageCustoms?.terms_of_trade_code?.toUpperCase() || "" ;
     if(termsOfTradeCode === TRADE_CODE.DDP){
         return TRADE_CODE.DDP;
     }
@@ -117,7 +118,7 @@ const getProduct = (packageCustoms: Customs): Products[] => {
         let items : Products = {
             Description: customItem?.description,
             Sku: customItem?.sku,
-            HsCode:parseInt(customItem?.harmonized_tariff_code),
+            HsCode:customItem?.harmonized_tariff_code,
             Quantity: itemQuantity,
             Value: itemQuantity * parseInt(customItem?.value?.amount),
             OriginCountry: customItem?.country_of_origin,

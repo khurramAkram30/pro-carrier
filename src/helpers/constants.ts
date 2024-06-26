@@ -44,7 +44,7 @@ export const CUSTOM_CONTENTS = Object.freeze({
     Document: "documents",
     gift: "gift",
     other: "other",
-    Personal: "Persoanl",
+    Personal: "Personal",
     SaleOfGood: "SaleOfGood",
     returnedgoods: "returned_goods",
     ReturnedGoods: "ReturnedGoods"
