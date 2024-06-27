@@ -1,13 +1,14 @@
-import { ErrorDetail, UnauthorizedError } from "@shipengine/connect-runtime";
+import { ErrorDetail, ExternalServerError, UnauthorizedError } from "@shipengine/connect-runtime";
 import { HttpStatusCode } from "axios";
 import { InternalReqRegister } from "./internal-models";
 import { Address, ConsigneeAddress, SenderAddress } from "../api/models/create-label-request";
 import { CarrierOperation, COMMANDS, WEIGHT_UNIT } from "./constants";
-import { AddressBase, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType } from "@shipengine/connect-carrier-api";
+import { AddressBase, CreateLabelRequest, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType, requests } from "@shipengine/connect-carrier-api";
 
 
 export const getAuthentication = (data: InternalReqRegister) => {
-    return data?.api_key;
+    const metaData = data ?? {};
+    return metaData?.api_key ?? "";
 }
 
 export const getCommand = (data: CarrierOperation) => {
@@ -112,8 +113,6 @@ export const getLabelFormat = (label_format) => {
     }
 }
 
-
-
 export const getCustomError = (err: any) => {
     const customError = err.Error;
     if (customError === "Access Denied") {
@@ -126,19 +125,17 @@ export const getCustomError = (err: any) => {
     }
 };
 
-export const HandlesError = (error: any) => {
+export const HandleError = (error) => {
     const errorCode: ErrorDetail[] = [];
-    if (error?.details) {
+    const baseError = "Error Received From API: ";
+    if (error?.ErrorLevel !== 0) {
         errorCode.push(
             {
-                errorCode: error.details[0].errorCode,
-                message: error.details[0].message
+                errorCode: error?.ErrorLevel,
+                message: baseError+"Error Code: "+error?.ErrorLevel+", "+"Error Message: "+error?.Error
             }
         )
 
-    }
-
-    if (error.statusCode === HttpStatusCode.Unauthorized) {
-        throw new UnauthorizedError("Message From Carrier Api", errorCode);
+        throw new ExternalServerError(baseError , errorCode);
     }
 }

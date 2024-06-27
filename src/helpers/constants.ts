@@ -18,36 +18,34 @@ export const COMMANDS = Object.freeze ({
 });
 
 export const SERVICE_API_CODES = Object.freeze({
-    ProCarrierParcelPacket: "PCPT",
-    ProCarrierParcelPacketInternational: "PCPT",
-    ProCarrierParcelExpress: "PCPE",
-    ProCarrierParcelExpressInternational: "PCPE",
-    ProCarrierParcelPlus: "PCPL",
-    ProCarrierParcelPlusInternational: "PCPL",
-    ProCarrierParcelPost: "PCPP",
-    ProCarrierParcelPostInternational: "PCPP"
+    ProCarrierParcelPacket: 'PCPT',
+    ProCarrierParcelPacketInternational: 'PCPT',
+    ProCarrierParcelExpress: 'PCPE',
+    ProCarrierParcelExpressInternational: 'PCPE',
+    ProCarrierParcelPlus: 'PCPL',
+    ProCarrierParcelPlusInternational: 'PCPL',
+    ProCarrierParcelPost: 'PCPP',
+    ProCarrierParcelPostInternational: 'PCPP'
 });
 
 export const WEIGHT_UNIT = Object.freeze({
-    Pounds: "pounds",
-    Kilogram: "kilogram"
+    Pounds: 'pounds',
+    Kilogram: 'kilogram'
 });
 
 export const TRADE_CODE = Object.freeze({
-    DDP: "DDP",
-    DDU: "DDU"
+    DDP: 'DDP',
+    DDU: 'DDU'
 });
 
 export const CUSTOM_CONTENTS = Object.freeze({
-    Sample: "sample",
-    CommercialSample: "CommercialSample",
-    Document: "documents",
-    gift: "gift",
-    other: "other",
-    Personal: "Personal",
-    SaleOfGood: "SaleOfGood",
-    returnedgoods: "returned_goods",
-    ReturnedGoods: "ReturnedGoods"
+    Sample: 'sample',
+    CommercialSample: 'CommercialSample',
+    Document: 'documents',
+    gift: 'gift',
+    other: 'other',
+    Personal: 'Personal',
+    SaleOfGood: 'SaleOfGood',
+    returnedgoods: 'returned_goods',
+    ReturnedGoods: 'ReturnedGoods'
 })
-
-

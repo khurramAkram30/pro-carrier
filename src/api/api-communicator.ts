@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { CarrierOperation } from '../helpers/constants';
 import { LogInfo } from 'connect-carrier-api-utils';
-import { HandlesError } from '../helpers/utils';
+import { HandleError } from '../helpers/utils';
 
 export const ProcessRequest = async<T>(requestConfig: AxiosRequestConfig, operationName: CarrierOperation): Promise<T> => {
         try {
@@ -13,7 +13,7 @@ export const ProcessRequest = async<T>(requestConfig: AxiosRequestConfig, operat
 
                 return response.data;
         } catch (error) {
-                HandlesError(error);
+                // HandleError(error);
         }
 
 

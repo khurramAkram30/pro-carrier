@@ -1,19 +1,18 @@
-import { BaseResponse } from "@shipengine/connect-carrier-api/lib/responses/base-response";
-
-export interface CreateLabelRes extends BaseResponse {
-    tracking_number: string;
-    documents: Documents[];
-    Trackable: boolean;
-    packages:Packages[];
+export interface ICreateLabelResponse {
+    ErrorLevel: number;
+    Shipment: IShipment;
 }
-
-export interface Documents {
-    type: string[];
-    data: string;
-    format: string
+interface IShipment {
+    TrackingNumber: string;
+    ShipperReference: string;
+    DisplayId: string;
+    Service: string;
+    Carrier: string;
+    CarrierTrackingNumber: string;
+    CarrierLocalTrackingNumber: string;
+    CarrierBarcodeNumber: string;
+    CarrierTrackingUrl: string;
+    LabelFormat: string;
+    LabelType: string;
+    LabelImage: string
 }
-export interface Packages {
-    tracking_number: string;
-    documents:Documents[];
-
-}   

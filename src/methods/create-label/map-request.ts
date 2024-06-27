@@ -14,6 +14,8 @@ import {
     CreateLabelRequest, 
     Customs, 
     } from "@shipengine/connect-carrier-api";
+import { IGetShipmentInvoiceRequest } from "../../api/models/get-shipment-request";
+import { ICreateLabelResponse } from "../../api/models/create-label-response";
 
 export const mapRequest = (request: CreateLabelRequest): AxiosRequestConfig => { 
     return {
@@ -23,13 +25,48 @@ export const mapRequest = (request: CreateLabelRequest): AxiosRequestConfig => {
     };
 }
 
+export const isInternationalOrDomestic = (request: CreateLabelRequest): boolean =>{
+    const shipTo = request?.ship_to;
+    const shipFrom = request?.ship_from;   
+    if (shipTo.country_code !== shipFrom.country_code ){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+export const mapGetShipment = (request:CreateLabelRequest, response: ICreateLabelResponse) : AxiosRequestConfig => {
+    
+    return {
+        url:TEST_URL,
+        method:"POST",
+        data:getShipmentInvoice(request,response)
+    };
+}
+
+const getShipmentInvoice = (request:CreateLabelRequest, response:ICreateLabelResponse) : IGetShipmentInvoiceRequest => {
+    return {
+        Apikey: getAuthentication(request.metadata),
+        Command: "GetShipmentInvoice",
+        Shipment: getShipmentData(response)
+    } 
+}
+
+const getShipmentData = (response:ICreateLabelResponse) => {
+    return {
+        LabelFormat: "PDF",
+        TrackingNumber : response.Shipment.TrackingNumber,
+    }
+}
+ 
 const orderShipment = (data: CreateLabelRequest): CreateLabelReq => ({
-        Apikey: getAuthentication(data.metadata),
+        Apikey: getAuthentication(data?.metadata),
         Command: getCommand(CarrierOperation.CreateLabel),
-        Shipment: getShipment(data)
+        Shipment: getOrderShipment(data)
 });
 
-const getShipment = (data : CreateLabelRequest) : Shipments  => {
+const getOrderShipment = (data : CreateLabelRequest) : Shipments  => {
     const packages = data?.packages[0];
     return {
         RequireCarrierTrackingNumber: true,
