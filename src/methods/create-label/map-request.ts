@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios"
-import { CUSTOM_CONTENTS, CarrierOperation, SERVICE_API_CODES, TEST_URL, TRADE_CODE } from "../../helpers/constants";
+import { CUSTOM_CONTENTS, CarrierOperation, SERVICE_API_CODES, TEST_URL } from "../../helpers/constants";
 import { CreateLabelReq, Products, Shipments} from "../../api/models/create-label-request";
 import { 
     getAuthentication, 
@@ -16,6 +16,7 @@ import {
     } from "@shipengine/connect-carrier-api";
 import { IGetShipmentInvoiceRequest } from "../../api/models/get-shipment-request";
 import { ICreateLabelResponse } from "../../api/models/create-label-response";
+import { TermsOfTradeCode } from "@shipengine/connect-carrier-api/lib/models/inconterms/terms-of-trade-code";
 
 export const mapRequest = (request: CreateLabelRequest): AxiosRequestConfig => { 
     return {
@@ -113,15 +114,15 @@ const getCurrency = (packageCustoms: Customs): string => {
 
 const getCustomsDuty = (packageCustoms:Customs, ser_code:string): string => {
     const termsOfTradeCode: string = packageCustoms?.terms_of_trade_code?.toUpperCase() || "" ;
-    if(termsOfTradeCode === TRADE_CODE.DDP){
-        return TRADE_CODE.DDP;
+    if(termsOfTradeCode === TermsOfTradeCode.DDP){
+        return TermsOfTradeCode.DDP;
     }
     if((ser_code.toUpperCase() === SERVICE_API_CODES.ProCarrierParcelPlus || ser_code === SERVICE_API_CODES.ProCarrierParcelPlusInternational) &&
         (!termsOfTradeCode)){
-        return TRADE_CODE.DDP;
+        return TermsOfTradeCode.DDP;
     }
     else{
-        return  TRADE_CODE.DDU;
+        return  TermsOfTradeCode.DDU;
     }
     
 }

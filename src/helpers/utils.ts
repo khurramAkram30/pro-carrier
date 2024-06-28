@@ -2,8 +2,8 @@ import { ErrorDetail, ExternalServerError, UnauthorizedError } from "@shipengine
 import { HttpStatusCode } from "axios";
 import { InternalReqRegister } from "./internal-models";
 import { Address, ConsigneeAddress, SenderAddress } from "../api/models/create-label-request";
-import { CarrierOperation, COMMANDS, WEIGHT_UNIT } from "./constants";
-import { AddressBase, CreateLabelRequest, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType, requests } from "@shipengine/connect-carrier-api";
+import { CarrierOperation, COMMANDS } from "./constants";
+import { AddressBase, CreateLabelRequest, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType, WeightUnit, requests } from "@shipengine/connect-carrier-api";
 
 
 export const getAuthentication = (data: InternalReqRegister) => {
@@ -74,10 +74,10 @@ export const getAddress = (address: AddressBase): Address => {
 
 
 export const getWeight = (pakg) => {
-    if (pakg.weight_details.source_weight_unit === WEIGHT_UNIT.Pounds) {
+    if (pakg.weight_details.source_weight_unit === WeightUnit.Pounds) {
         return pakg.weight_details.source_weight
     }
-    else if (pakg.weight_details.source_weight_unit === WEIGHT_UNIT.Kilogram) {
+    else if (pakg.weight_details.source_weight_unit === WeightUnit.Kilograms) {
         return pakg.weight_details.source_weight
     }
     else {
@@ -86,10 +86,10 @@ export const getWeight = (pakg) => {
 }
 
 export const getWeightUnit = (pakg) => {
-    if (pakg.weight_details.source_weight_unit = WEIGHT_UNIT.Pounds ){
+    if (pakg.weight_details.source_weight_unit = WeightUnit.Pounds){
         return "lb";
     }
-    else if (pakg.weight_details.source_weight_unit = WEIGHT_UNIT.Kilogram ){
+    else if (pakg.weight_details.source_weight_unit = WeightUnit.Kilograms){
         return "kg";
     }
     else{
@@ -128,7 +128,7 @@ export const getCustomError = (err: any) => {
 export const HandleError = (error) => {
     const errorCode: ErrorDetail[] = [];
     const baseError = "Error Received From API: ";
-    if (error?.ErrorLevel !== 0) {
+    if (error?.Error) {
         errorCode.push(
             {
                 errorCode: error?.ErrorLevel,

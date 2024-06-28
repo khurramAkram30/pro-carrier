@@ -28,16 +28,6 @@ export const SERVICE_API_CODES = Object.freeze({
     ProCarrierParcelPostInternational: 'PCPP'
 });
 
-export const WEIGHT_UNIT = Object.freeze({
-    Pounds: 'pounds',
-    Kilogram: 'kilogram'
-});
-
-export const TRADE_CODE = Object.freeze({
-    DDP: 'DDP',
-    DDU: 'DDU'
-});
-
 export const CUSTOM_CONTENTS = Object.freeze({
     Sample: 'sample',
     CommercialSample: 'CommercialSample',
@@ -49,3 +39,31 @@ export const CUSTOM_CONTENTS = Object.freeze({
     returnedgoods: 'returned_goods',
     ReturnedGoods: 'ReturnedGoods'
 })
+
+export enum MaximumWeight {
+    ProCarrierParcelPacket = 2,
+    ProCarrierParcelExpress = 30,
+    ProCarrierParcelPost = 30,
+    ProCarrierParcelPlus = 30
+}
+
+export enum MaximumLength {
+    ProCarrierParcelPacket = 60,
+    ProCarrierParcelExpress = 120,
+    ProCarrierParcelPost = 150,
+    ProCarrierParcelPlus = 120
+}
+
+export enum MaximumSum {
+    ProCarrierParcelPacket = 90,
+    ProCarrierParcelExpress = 180,
+    ProCarrierParcelPlus = 150
+}
+
+export enum MaximumGirth {
+    ProCarrierParcelExpress = 440,
+    ProCarrierParcelPost = 300
+}
+
+
+export const ONE_POUND: number = 0.45;
