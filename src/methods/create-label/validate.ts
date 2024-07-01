@@ -14,9 +14,9 @@ export const validate = (request: CreateLabelRequest) => {
         }
     }
     else {
-        if (request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDP ||
-            request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDU) {
-            throw new BadRequestError("Only DDP and DDU are valid for terms_of_trade_code");
+        if (request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDU &&
+            request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDP)  {
+            throw new BadRequestError("Only DDP and DDU are valid for terms of trade code");
         }
     }
 
@@ -24,17 +24,17 @@ export const validate = (request: CreateLabelRequest) => {
         throw new BadRequestError("ShipFrom.Countrycode: It is mandatory");
     }
 
-    if(request.packages?.[0]?.customs?.customs_items){
-        const customItems=request.packages?.[0]?.customs?.customs_items;
+    if (request.packages?.[0]?.customs?.customs_items) {
+        const customItems = request.packages?.[0]?.customs?.customs_items;
         customItems.forEach((items) => {
-            if (parseInt(items.value.amount) < 0){
+            if (parseInt(items.value.amount) < 0) {
                 throw new BadRequestError("Custom items amount must be positive integer.");
-            } 
+            }
         });
     }
-    
+
     if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelPacket) {
-        ValidatePackage(request);  
+        ValidatePackage(request);
     }
     if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelExpress) {
         ValidatePackage(request);
@@ -48,12 +48,12 @@ export const validate = (request: CreateLabelRequest) => {
 };
 
 const ValidatePackage = (request: CreateLabelRequest) => {
-    if(request?.packages?.[0]){
-        HandleWeightAndDimension(request.packages[0],request.service_code);
+    if (request?.packages?.[0]) {
+        HandleWeightAndDimension(request.packages[0], request.service_code);
     }
 };
 
-const HandleWeightAndDimension = (request:Package, ser_code:string) => {
+const HandleWeightAndDimension = (request: Package, ser_code: string) => {
     if (request?.weight_details?.source_weight &&
         request?.weight_details?.source_weight_unit) {
         const sourceWeight = request.weight_details.source_weight;
@@ -65,7 +65,7 @@ const HandleWeightAndDimension = (request:Package, ser_code:string) => {
             MaximumLength.ProCarrierParcelPacket,
             ser_code);
     }
-   
+    
 };
 
 const ValidateWeight = (sourceWeight: number, sourceWeightUnit: WeightUnit, maximumWeight: number) => {
@@ -79,9 +79,9 @@ const ValidateWeight = (sourceWeight: number, sourceWeightUnit: WeightUnit, maxi
 };
 
 const validateDimension = (dimension: Dimensions, maxLength: MaximumLength, service_code?: string) => {
-    const height = dimension?.height;
-    const width = dimension?.width;
-    const length = dimension?.length;
+    const height = dimension?.height || null;
+    const width = dimension?.width || null;
+    const length = dimension?.length || null;
     const girth = width + height * 2;
     const sum = height + width + length;
     if (length > maxLength) {

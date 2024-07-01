@@ -1,3 +1,5 @@
+import { ICreateLabelResponse } from "./create-label-response";
+
 export interface IGetShipmentInvoiceRequest {
     Apikey: string;
     Command: string;
@@ -5,7 +7,11 @@ export interface IGetShipmentInvoiceRequest {
 }
 
 export interface GetShipments {
-    LabelFormat: string;
+    LabelFormat?: string;
     TrackingNumber: string;
     ShipperReference?: string;
+}
+
+export interface IGetShipmentResponse extends ICreateLabelResponse {
+    
 }

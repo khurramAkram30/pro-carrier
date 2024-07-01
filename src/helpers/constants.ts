@@ -10,11 +10,13 @@ export enum CarrierOperation {
 export const TEST_URL = 'https://dgapi.app/API/?testMode=1';
 export const CARRIER_URL = 'https://weareprocarrier.com/';
 export const TRACKING_URL = 'https://tracking.weareprocarrier.com/?tn=[track_number]';
+export const CARRIER_NAME = "ProCarrier";
 
 export const COMMANDS = Object.freeze ({
     OrderShipments: 'OrderShipment',
     GetShipment: 'GetShipmentInvoice',
-    VoidShipment: 'VoidShipment'
+    VoidShipment: 'VoidShipment',
+    TrackShipment: 'TrackShipment'
 });
 
 export const SERVICE_API_CODES = Object.freeze({

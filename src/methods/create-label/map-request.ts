@@ -1,9 +1,8 @@
 import { AxiosRequestConfig } from "axios"
-import { CUSTOM_CONTENTS, CarrierOperation, SERVICE_API_CODES, TEST_URL } from "../../helpers/constants";
+import { COMMANDS, CUSTOM_CONTENTS, CarrierOperation, SERVICE_API_CODES, TEST_URL } from "../../helpers/constants";
 import { CreateLabelReq, Products, Shipments} from "../../api/models/create-label-request";
 import { 
     getAuthentication, 
-    getCommand, 
     getLabelFormat, 
     getSenderAddress,
     getConsigneeAddress,
@@ -12,9 +11,10 @@ import {
     } from "../../helpers/utils";
 import { 
     CreateLabelRequest, 
-    Customs, 
+    Customs,
+    LabelFormatsEnum, 
     } from "@shipengine/connect-carrier-api";
-import { IGetShipmentInvoiceRequest } from "../../api/models/get-shipment-request";
+import { IGetShipmentInvoiceRequest } from "../../api/models/get-shipment-interface";
 import { ICreateLabelResponse } from "../../api/models/create-label-response";
 import { TermsOfTradeCode } from "@shipengine/connect-carrier-api/lib/models/inconterms/terms-of-trade-code";
 
@@ -49,21 +49,21 @@ export const mapGetShipment = (request:CreateLabelRequest, response: ICreateLabe
 const getShipmentInvoice = (request:CreateLabelRequest, response:ICreateLabelResponse) : IGetShipmentInvoiceRequest => {
     return {
         Apikey: getAuthentication(request.metadata),
-        Command: "GetShipmentInvoice",
+        Command: COMMANDS.GetShipment,
         Shipment: getShipmentData(response)
     } 
 }
 
 const getShipmentData = (response:ICreateLabelResponse) => {
     return {
-        LabelFormat: "PDF",
+        LabelFormat: LabelFormatsEnum.PDF,
         TrackingNumber : response.Shipment.TrackingNumber,
     }
 }
  
 const orderShipment = (data: CreateLabelRequest): CreateLabelReq => ({
         Apikey: getAuthentication(data?.metadata),
-        Command: getCommand(CarrierOperation.CreateLabel),
+        Command: COMMANDS.OrderShipments,
         Shipment: getOrderShipment(data)
 });
 
@@ -75,7 +75,7 @@ const getOrderShipment = (data : CreateLabelRequest) : Shipments  => {
         LabelFormat: getLabelFormat(data.label_format),
         ShipperReference: packages?.label_messages?.reference1,
         Service: data?.service_code,
-        SenderAddress: getSenderAddress(data.ship_from),
+        SenderAddress: getSenderAddress(data?.ship_from),
         ConsigneeAddress: getConsigneeAddress(data?.ship_to),
         Weight: getWeight(packages),
         WeightUnit: getWeightUnit(packages),
@@ -93,7 +93,7 @@ const getOrderShipment = (data : CreateLabelRequest) : Shipments  => {
 };
 
 const getCustoms = (packageCustoms: Customs): number => {
-    const customItem = packageCustoms?.customs_items;
+    const customItem = packageCustoms?.customs_items ?? [];
     let totalValue : number = 0;
     customItem.map(items => {
         totalValue += parseFloat(items.value?.amount) * (items.quantity);
@@ -113,7 +113,7 @@ const getCurrency = (packageCustoms: Customs): string => {
 };
 
 const getCustomsDuty = (packageCustoms:Customs, ser_code:string): string => {
-    const termsOfTradeCode: string = packageCustoms?.terms_of_trade_code?.toUpperCase() || "" ;
+    const termsOfTradeCode: string = packageCustoms?.terms_of_trade_code?.toUpperCase() ?? "" ;
     if(termsOfTradeCode === TermsOfTradeCode.DDP){
         return TermsOfTradeCode.DDP;
     }
@@ -127,7 +127,7 @@ const getCustomsDuty = (packageCustoms:Customs, ser_code:string): string => {
     
 }
 const getDeclaration = (packageCustoms:Customs): string => {
-    const content = packageCustoms.contents.toLowerCase();
+    const content = packageCustoms.contents.toLowerCase() ?? "";
     if(content === CUSTOM_CONTENTS.Document){
         return CUSTOM_CONTENTS.Document.charAt(0).toUpperCase();
     }
@@ -149,7 +149,7 @@ const getDeclaration = (packageCustoms:Customs): string => {
 }
 
 const getProduct = (packageCustoms: Customs): Products[] => {
-    const content = packageCustoms.customs_items;
+    const content = packageCustoms?.customs_items ?? [];
     let contentBody = [];
     content.forEach((customItem) => {
         let itemQuantity =  customItem?.quantity;

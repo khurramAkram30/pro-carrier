@@ -1,7 +1,7 @@
 import { CreateLabelResponse, Document, DocumentFormat, DocumentType, LabelPackage, Package, PackageType } from "@shipengine/connect-carrier-api";
 import { ICreateLabelResponse } from "../../api/models/create-label-response";
-import { IGetShipmentResponse } from "../../api/models/get-shipment-response";
 import { InternalReqRegister } from "../../helpers/internal-models";
+import { IGetShipmentResponse } from "../../api/models/get-shipment-interface";
 
 export const mapResponse = (
     orderShipment: ICreateLabelResponse,

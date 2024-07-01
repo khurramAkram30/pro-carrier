@@ -10,53 +10,30 @@ export const getAuthentication = (data: InternalReqRegister) => {
     const metaData = data ?? {};
     return metaData?.api_key ?? "";
 }
-
-export const getCommand = (data: CarrierOperation) => {
-    const command = data;
-    switch (command) {
-        case CarrierOperation.CreateLabel:
-            return COMMANDS.OrderShipments;
-            break;
-        case CarrierOperation.GetShipment:
-            return COMMANDS.GetShipment;
-            break;
-    }
-}
-
-export const getName = (address: AddressBase): string => {
-    const firstName = address?.first_name;
-    const lastName = address?.last_name;
-    if (address?.name) {
-        return address.name;
-    }
-    else {
-        return firstName + " " + lastName;
-    }
-}
-
 export const getSenderAddress = (shipFrom: ShipFrom): SenderAddress => {
     return {
         ...getAddress(shipFrom),
-        Vat:  getTaxIdentifierId(shipFrom?.tax_identifiers,TaxIdentifierType.VAT),      
-        Eori: getTaxIdentifierId(shipFrom?.tax_identifiers,TaxIdentifierType.EORI),
-        Ioss: getTaxIdentifierId(shipFrom?.tax_identifiers,TaxIdentifierType.IOSS),
+        Vat: getTaxIdentifierId(shipFrom?.tax_identifiers, TaxIdentifierType.VAT),
+        Eori: getTaxIdentifierId(shipFrom?.tax_identifiers, TaxIdentifierType.EORI),
+        Ioss: getTaxIdentifierId(shipFrom?.tax_identifiers, TaxIdentifierType.IOSS),
     }
 }
 
 export const getConsigneeAddress = (shipTo: ShipTo): ConsigneeAddress => {
     return {
         ...getAddress(shipTo),
-        Vat: getTaxIdentifierId(shipTo?.tax_identifiers,TaxIdentifierType.VAT),
+        Vat: getTaxIdentifierId(shipTo?.tax_identifiers, TaxIdentifierType.VAT),
     }
 }
 
-const getTaxIdentifierId = (data:TaxIdentifier[],type: TaxIdentifierType):string => {
-    return data.find(TaxIdentifier => TaxIdentifier.type.toLowerCase() === type)?.id;
+const getTaxIdentifierId = (data: TaxIdentifier[], type: TaxIdentifierType): string => {
+    const ti = data || [];
+    return ti.find(TaxIdentifier => TaxIdentifier.type.toLowerCase() === type)?.id ?? '';
 }
 
 export const getAddress = (address: AddressBase): Address => {
     const addressLines = address.address_lines ?? [];
-    const mappedAddress : Address = {
+    const mappedAddress: Address = {
         Name: getName(address),
         Company: address?.company_name,
         AddressLine1: addressLines[0],
@@ -72,33 +49,46 @@ export const getAddress = (address: AddressBase): Address => {
     return mappedAddress;
 }
 
+export const getName = (address: AddressBase): string => {
 
-export const getWeight = (pakg) => {
-    if (pakg.weight_details.source_weight_unit === WeightUnit.Pounds) {
-        return pakg.weight_details.source_weight
-    }
-    else if (pakg.weight_details.source_weight_unit === WeightUnit.Kilograms) {
-        return pakg.weight_details.source_weight
+    if (address?.name) {
+        return address.name;
     }
     else {
-        return pakg.weight_details.weight_in_grams / 1000
+        const firstName = address?.first_name || "";
+        const lastName = address?.last_name || "";
+        return firstName + " " + lastName;
     }
 }
 
-export const getWeightUnit = (pakg) => {
-    if (pakg.weight_details.source_weight_unit = WeightUnit.Pounds){
+export const getWeight = (pakg: Package) => {
+    const weightDetaiils =  pakg?.weight_details || null;
+
+    if (weightDetaiils?.source_weight_unit === WeightUnit.Pounds) {
+        return pakg.weight_details.source_weight
+    }
+    else if (weightDetaiils?.source_weight_unit === WeightUnit.Kilograms) {
+        return pakg.weight_details.source_weight
+    }
+    else {
+        return pakg?.weight_details?.weight_in_grams / 1000
+    }
+}
+
+export const getWeightUnit = (pakg: Package) => {
+    if (pakg?.weight_details?.source_weight_unit === WeightUnit.Pounds) {
         return "lb";
     }
-    else if (pakg.weight_details.source_weight_unit = WeightUnit.Kilograms){
+    else if (pakg?.weight_details?.source_weight_unit === WeightUnit.Kilograms) {
         return "kg";
     }
-    else{
+    else {
         return "kg"
     }
 }
 
 
-export const getLabelFormat = (label_format) => {
+export const getLabelFormat = (label_format: string) => {
     if (label_format === LabelFormatsEnum.PDF) {
         return LabelFormatsEnum.PDF;
     }
@@ -132,10 +122,10 @@ export const HandleError = (error) => {
         errorCode.push(
             {
                 errorCode: error?.ErrorLevel,
-                message: baseError+"Error Code: "+error?.ErrorLevel+", "+"Error Message: "+error?.Error
+                message: baseError + "Error Code: " + error?.ErrorLevel + ", " + "Error Message: " + error?.Error
             }
         )
 
-        throw new ExternalServerError(baseError , errorCode);
+        throw new ExternalServerError(baseError, errorCode);
     }
 }
