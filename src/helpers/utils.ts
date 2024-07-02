@@ -1,9 +1,7 @@
 import { ErrorDetail, ExternalServerError, UnauthorizedError } from "@shipengine/connect-runtime";
-import { HttpStatusCode } from "axios";
 import { InternalReqRegister } from "./internal-models";
 import { Address, ConsigneeAddress, SenderAddress } from "../api/models/create-label-request";
-import { CarrierOperation, COMMANDS } from "./constants";
-import { AddressBase, CreateLabelRequest, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType, WeightUnit, requests } from "@shipengine/connect-carrier-api";
+import { AddressBase, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType, WeightUnit } from "@shipengine/connect-carrier-api";
 
 
 export const getAuthentication = (data: InternalReqRegister) => {
@@ -62,7 +60,7 @@ export const getName = (address: AddressBase): string => {
 }
 
 export const getWeight = (pakg: Package) => {
-    const weightDetaiils =  pakg?.weight_details || null;
+    const weightDetaiils = pakg?.weight_details || null;
 
     if (weightDetaiils?.source_weight_unit === WeightUnit.Pounds) {
         return pakg.weight_details.source_weight
@@ -103,29 +101,24 @@ export const getLabelFormat = (label_format: string) => {
     }
 }
 
-export const getCustomError = (err: any) => {
-    const customError = err.Error;
-    if (customError === "Access Denied") {
-        throw new UnauthorizedError('Error from Carrier Api', [
-            {
-                errorCode: err.ErrorLevel,
-                message: "Access denied"
-            }
-        ]);
+export const getCarrierError = (error) => {
+    if (error?.Error === "Access Denied") {
+        throw new UnauthorizedError(`Error from Carrier Api: Error Code: ${error.ErrorLevel} , Error Message: ${error.Error}`);
     }
 };
 
 export const HandleError = (error) => {
-    const errorCode: ErrorDetail[] = [];
-    const baseError = "Error Received From API: ";
+    const ErrorDetail: ErrorDetail[] = [];
+    const baseError = "";
     if (error?.Error) {
-        errorCode.push(
+        ErrorDetail.push(
             {
                 errorCode: error?.ErrorLevel,
-                message: baseError + "Error Code: " + error?.ErrorLevel + ", " + "Error Message: " + error?.Error
+                message: "Error Received From API: "+ "Error Code: " + error?.ErrorLevel + ", " + "Error Message: " + error?.Error
             }
         )
 
-        throw new ExternalServerError(baseError, errorCode);
+        throw new ExternalServerError(ErrorDetail[0].message);
     }
 }
+

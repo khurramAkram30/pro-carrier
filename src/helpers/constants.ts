@@ -6,13 +6,13 @@ export enum CarrierOperation {
     Track = 'Track',
     GetShipment = 'GetShipment'
 
- }
+}
 export const TEST_URL = 'https://dgapi.app/API/?testMode=1';
 export const CARRIER_URL = 'https://weareprocarrier.com/';
 export const TRACKING_URL = 'https://tracking.weareprocarrier.com/?tn=[track_number]';
 export const CARRIER_NAME = "ProCarrier";
 
-export const COMMANDS = Object.freeze ({
+export const COMMANDS = Object.freeze({
     OrderShipments: 'OrderShipment',
     GetShipment: 'GetShipmentInvoice',
     VoidShipment: 'VoidShipment',
@@ -29,6 +29,14 @@ export const SERVICE_API_CODES = Object.freeze({
     ProCarrierParcelPost: 'PCPP',
     ProCarrierParcelPostInternational: 'PCPP'
 });
+
+export const SERVICE_CODES = [
+    SERVICE_API_CODES.ProCarrierParcelPacket,
+    SERVICE_API_CODES.ProCarrierParcelExpress,
+    SERVICE_API_CODES.ProCarrierParcelPlus,
+    SERVICE_API_CODES.ProCarrierParcelPost,
+];
+
 
 export const CUSTOM_CONTENTS = Object.freeze({
     Sample: 'sample',

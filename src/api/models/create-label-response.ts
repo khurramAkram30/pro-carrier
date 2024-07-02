@@ -1,4 +1,6 @@
-export interface ICreateLabelResponse {
+import { BaseResponse } from "./base-response";
+
+export interface ICreateLabelResponse extends BaseResponse{
     ErrorLevel: number;
     Shipment: IShipment;
 }

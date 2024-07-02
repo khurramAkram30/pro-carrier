@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios"
-import { COMMANDS, CUSTOM_CONTENTS, CarrierOperation, SERVICE_API_CODES, TEST_URL } from "../../helpers/constants";
+import { COMMANDS, CUSTOM_CONTENTS, SERVICE_API_CODES, TEST_URL } from "../../helpers/constants";
 import { CreateLabelReq, Products, Shipments} from "../../api/models/create-label-request";
 import { 
     getAuthentication, 
@@ -12,11 +12,15 @@ import {
 import { 
     CreateLabelRequest, 
     Customs,
-    LabelFormatsEnum, 
+    LabelFormatsEnum,
+    ShipFrom,
+    VoidLabelsRequest, 
     } from "@shipengine/connect-carrier-api";
 import { IGetShipmentInvoiceRequest } from "../../api/models/get-shipment-interface";
 import { ICreateLabelResponse } from "../../api/models/create-label-response";
 import { TermsOfTradeCode } from "@shipengine/connect-carrier-api/lib/models/inconterms/terms-of-trade-code";
+import { v4 as uuidv4 } from 'uuid';
+import { InternalReqRegister } from "../../helpers/internal-models";
 
 export const mapRequest = (request: CreateLabelRequest): AxiosRequestConfig => { 
     return {
@@ -67,7 +71,7 @@ const orderShipment = (data: CreateLabelRequest): CreateLabelReq => ({
         Shipment: getOrderShipment(data)
 });
 
-const getOrderShipment = (data : CreateLabelRequest) : Shipments  => {
+const getOrderShipment = (data : CreateLabelRequest): Shipments  => {
     const packages = data?.packages[0];
     return {
         RequireCarrierTrackingNumber: true,
@@ -83,16 +87,16 @@ const getOrderShipment = (data : CreateLabelRequest) : Shipments  => {
         Width: packages?.dimension_details?.dimensions_in_centimeters?.width, 
         Height: packages?.dimension_details?.dimensions_in_centimeters?.height,
         DimUnit: "cm",
-        Value: getCustoms(packages?.customs),
+        Value: getValue(packages?.customs),
         Currency: getCurrency(packages?.customs),
         CustomsDuty:getCustomsDuty(packages?.customs,data?.service_code),
         Description: packages?.content_description,
         DeclarationType:getDeclaration(packages?.customs),
-        Products:getProduct(packages.customs),
+        Products:getProducts(packages.customs),
     };
 };
 
-const getCustoms = (packageCustoms: Customs): number => {
+const getValue = (packageCustoms: Customs): number => {
     const customItem = packageCustoms?.customs_items ?? [];
     let totalValue : number = 0;
     customItem.map(items => {
@@ -148,7 +152,7 @@ const getDeclaration = (packageCustoms:Customs): string => {
     }
 }
 
-const getProduct = (packageCustoms: Customs): Products[] => {
+const getProducts = (packageCustoms: Customs): Products[] => {
     const content = packageCustoms?.customs_items ?? [];
     let contentBody = [];
     content.forEach((customItem) => {
@@ -167,3 +171,21 @@ const getProduct = (packageCustoms: Customs): Products[] => {
     
     return contentBody;
 }
+
+export const VoidLabelMapping = (trackingNumber: string, shipFrom: ShipFrom ,metadata: InternalReqRegister): VoidLabelsRequest => {
+    return {
+        transaction_id:"",
+        void_requests: [
+            {
+                tracking_number:trackingNumber,
+                void_request_id: uuidv4(),
+                ship_from:{
+                    country_code:shipFrom.country_code,
+                    postal_code:shipFrom.postal_code,
+                },
+            }   
+        ],
+        metadata:metadata
+    }
+}
+

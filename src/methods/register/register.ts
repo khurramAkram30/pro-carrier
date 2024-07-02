@@ -5,23 +5,15 @@ import { mapRequest } from "./map-request";
 import { ProcessRequest } from "../../api/api-communicator";
 import { mapResponse } from "./map-response";
 import { InternalReqRegister } from "../../helpers/internal-models";
-import { HttpStatusCode, UnauthorizedError } from "@shipengine/connect-runtime";
-import { getCustomError } from "../../helpers/utils";
+import { getCarrierError } from "../../helpers/utils";
 
 
 export const Register = async (request: RegisterRequest): Promise<RegisterResponse> => {
     const registrationInfo = <InternalReqRegister>request.registration_info || {};
-    validate(registrationInfo); 
+    validate(registrationInfo);
     const mapedRequest = mapRequest(registrationInfo);
-    try {
-        const response = await ProcessRequest(mapedRequest, CarrierOperation.Register);
-        getCustomError(response);
+    const response = await ProcessRequest(mapedRequest, CarrierOperation.Register);
+    getCarrierError(response);
 
-    } catch (error) {
-        if (error.statusCode === HttpStatusCode.UnAuthorized) {
-            throw new UnauthorizedError(error.details[0].message);
-        }   
-    }
-    
     return mapResponse(registrationInfo);
 }

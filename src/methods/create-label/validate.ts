@@ -1,7 +1,7 @@
 import { CreateLabelRequest, DimensionDetails, Dimensions, Package, WeightDetails, WeightUnit } from "@shipengine/connect-carrier-api";
 import { TermsOfTradeCode } from "@shipengine/connect-carrier-api/lib/models/inconterms/terms-of-trade-code";
 import { BadRequestError } from "@shipengine/connect-runtime";
-import { MaximumGirth, MaximumLength, MaximumSum, MaximumWeight, ONE_POUND, SERVICE_API_CODES } from "../../helpers/constants";
+import { MaximumGirth, MaximumLength, MaximumSum, MaximumWeight, ONE_POUND, SERVICE_API_CODES, SERVICE_CODES } from "../../helpers/constants";
 
 export const validate = (request: CreateLabelRequest) => {
     if (request?.packages?.length > 1) {
@@ -15,7 +15,7 @@ export const validate = (request: CreateLabelRequest) => {
     }
     else {
         if (request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDU &&
-            request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDP)  {
+            request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDP) {
             throw new BadRequestError("Only DDP and DDU are valid for terms of trade code");
         }
     }
@@ -33,16 +33,10 @@ export const validate = (request: CreateLabelRequest) => {
         });
     }
 
-    if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelPacket) {
-        ValidatePackage(request);
-    }
-    if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelExpress) {
-        ValidatePackage(request);
-    }
-    if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelPlus) {
-        ValidatePackage(request);
-    }
-    if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelPost) {
+    if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelExpress || 
+        request?.service_code === SERVICE_API_CODES.ProCarrierParcelPacket || 
+        request?.service_code === SERVICE_API_CODES.ProCarrierParcelPlus || 
+        request?.service_code === SERVICE_API_CODES.ProCarrierParcelPost) {
         ValidatePackage(request);
     }
 };
@@ -53,19 +47,17 @@ const ValidatePackage = (request: CreateLabelRequest) => {
     }
 };
 
-const HandleWeightAndDimension = (request: Package, ser_code: string) => {
+const HandleWeightAndDimension = (request: Package, servisCode: string) => {
     if (request?.weight_details?.source_weight &&
         request?.weight_details?.source_weight_unit) {
-        const sourceWeight = request.weight_details.source_weight;
-        const sourceWeightUnit = request.weight_details.source_weight_unit;
-        ValidateWeight(sourceWeight, sourceWeightUnit, MaximumWeight.ProCarrierParcelPacket);
+        ValidateWeight(request.weight_details.source_weight, request.weight_details.source_weight_unit, getMaximumWeight(servisCode));
     }
     if (request?.dimension_details?.dimensions_in_centimeters) {
         validateDimension(request?.dimension_details.dimensions_in_centimeters,
-            MaximumLength.ProCarrierParcelPacket,
-            ser_code);
+            getMaximumLength(servisCode),
+            servisCode);
     }
-    
+
 };
 
 const ValidateWeight = (sourceWeight: number, sourceWeightUnit: WeightUnit, maximumWeight: number) => {
@@ -78,33 +70,74 @@ const ValidateWeight = (sourceWeight: number, sourceWeightUnit: WeightUnit, maxi
     }
 };
 
-const validateDimension = (dimension: Dimensions, maxLength: MaximumLength, service_code?: string) => {
+const validateDimension = (dimension: Dimensions, maxLength: number, serviceCode?: string) => {
     const height = dimension?.height || null;
     const width = dimension?.width || null;
     const length = dimension?.length || null;
     const girth = width + height * 2;
     const sum = height + width + length;
+    
     if (length > maxLength) {
-        throw new BadRequestError("Exceed the Limit of Length");
+      throw new BadRequestError("Exceed the Limit of Length");
     }
-    if (service_code === SERVICE_API_CODES.ProCarrierParcelPost) {
+    
+    switch (serviceCode) {
+      case SERVICE_API_CODES.ProCarrierParcelPost:
         if (girth > MaximumGirth.ProCarrierParcelPost) {
-            throw new BadRequestError("Exceed the Limit of girth");
+          throw new BadRequestError("Exceed the Limit of girth");
         }
-    }
-    if (service_code === SERVICE_API_CODES.ProCarrierParcelExpress) {
-        if (girth > MaximumGirth.ProCarrierParcelPost) {
-            throw new BadRequestError("Exceed the Limit of girth");
+        break;
+      case SERVICE_API_CODES.ProCarrierParcelExpress:
+        if (girth > MaximumGirth.ProCarrierParcelExpress) {
+          throw new BadRequestError("Exceed the Limit of girth");
         }
         if (sum > MaximumSum.ProCarrierParcelExpress) {
-            throw new BadRequestError(`Maximum Limit of L+H+W: ${MaximumSum.ProCarrierParcelExpress}`);
+          throw new BadRequestError(`Maximum Limit of L+H+W: ${MaximumSum.ProCarrierParcelExpress}`);
         }
-    }
-    if (service_code === SERVICE_API_CODES.ProCarrierParcelPacket ||
-        service_code === SERVICE_API_CODES.ProCarrierParcelPlus) {
-        if (sum > MaximumSum.ProCarrierParcelExpress) {
-            throw new BadRequestError(`Maximum Limit of L+H+W: ${MaximumSum.ProCarrierParcelExpress}`);
+        break;
+      case SERVICE_API_CODES.ProCarrierParcelPacket:
+        if (sum > MaximumSum.ProCarrierParcelPacket) {
+            throw new BadRequestError(`Maximum Limit of L+H+W: ${MaximumSum.ProCarrierParcelPacket}`);
+          }
+          break;
+      case SERVICE_API_CODES.ProCarrierParcelPlus:
+        if (sum > MaximumSum.ProCarrierParcelPlus) {
+          throw new BadRequestError(`Maximum Limit of L+H+W: ${MaximumSum.ProCarrierParcelPlus}`);
         }
+        break;
+      default:
+        break;
     }
+  };
+  
 
-};
+const getMaximumWeight = (serviceCode: string) => {
+    switch (serviceCode) {
+      case SERVICE_API_CODES.ProCarrierParcelPacket:
+        return MaximumWeight.ProCarrierParcelPacket;
+      case SERVICE_API_CODES.ProCarrierParcelExpress:
+        return MaximumWeight.ProCarrierParcelExpress;
+      case SERVICE_API_CODES.ProCarrierParcelPlus:
+        return MaximumWeight.ProCarrierParcelPlus;
+      case SERVICE_API_CODES.ProCarrierParcelPost:
+        return MaximumWeight.ProCarrierParcelPost;
+      default:
+        throw new Error("Invalid service code");
+    }
+  };
+  
+  const getMaximumLength = (serviceCode: string) => {
+    switch (serviceCode) {
+      case SERVICE_API_CODES.ProCarrierParcelPacket:
+        return MaximumLength.ProCarrierParcelPacket;
+      case SERVICE_API_CODES.ProCarrierParcelExpress:
+        return MaximumLength.ProCarrierParcelExpress;
+      case SERVICE_API_CODES.ProCarrierParcelPlus:
+        return MaximumLength.ProCarrierParcelPlus;
+      case SERVICE_API_CODES.ProCarrierParcelPost:
+        return MaximumLength.ProCarrierParcelPost;
+      default:
+        throw new Error("Invalid service code");
+    }
+  };
+

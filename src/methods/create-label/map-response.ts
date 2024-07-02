@@ -10,9 +10,9 @@ export const mapResponse = (
 ): CreateLabelResponse => {
     const documents: Document[] = getShipmentInvoice?.Shipment ? [
         {
-            data: getShipmentInvoice?.Shipment?.LabelImage,
             format: DocumentFormat.Pdf,
-            type: [DocumentType.CommercialInvoice]
+            type: [DocumentType.CommercialInvoice],
+            data: getShipmentInvoice?.Shipment?.LabelImage
         }
     ] : [];
     const packages: LabelPackage[] = [

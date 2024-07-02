@@ -4,26 +4,22 @@ import { GetShipments } from "../../api/models/get-shipment-interface";
 import { getAuthentication } from "../../helpers/utils";
 import { COMMANDS, TEST_URL } from "../../helpers/constants";
 import { AxiosRequestConfig } from "axios";
+import { InternalReqRegister } from "../../helpers/internal-models";
 
-export const mapRequest = (request:VoidLabelsRequest): AxiosRequestConfig => {
+export const mapRequest = (trackingNumber: string, metadata: InternalReqRegister): AxiosRequestConfig => {
     return {
-        url:TEST_URL,
-        method:"POST",
-        data:getVoidLabel(request)
+        url: TEST_URL,
+        method: "POST",
+        data: {
+            Apikey: getAuthentication(metadata),
+            Command: COMMANDS.VoidShipment,
+            Shipment: getVoidShipment(trackingNumber),
+        }
     };
 }
 
-const getVoidLabel = (request: VoidLabelsRequest) : IVoidlabelRequest => {
-return{
-        Apikey:getAuthentication(request.metadata),
-        Command:COMMANDS.VoidShipment,
-        Shipment:getVoidShipment(request?.void_requests),
-    }
-}
-
-
-const getVoidShipment = (voidRequest: VoidRequest[]): GetShipments => {
+const getVoidShipment = (trackingNumber: string): GetShipments => {
     return {
-        TrackingNumber:voidRequest?.[0]?.tracking_number ?? ""
+        TrackingNumber: trackingNumber
     }
 }

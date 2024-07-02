@@ -8,19 +8,15 @@ import { CarrierOperation } from "../../helpers/constants";
 import { HandleError } from "../../helpers/utils";
 import { mapResponse } from "./map-response";
 
-export const Track = async(request: TrackingRequest): Promise<TrackingResponse> => {
+export const Track = async (request: TrackingRequest): Promise<TrackingResponse> => {
     const metadata = request?.metadata ?? {};
     const trackingNumber = GetTrackingNumber(request.identifiers ?? []);
-    if(!trackingNumber){
+    if (!trackingNumber) {
         throw new BadRequestError("Please provide tracking_number.")
     }
     const mappedRequest = mapRequest(request);
-    try {
-        const trackResponse = await ProcessRequest<ITrackResponse>(mappedRequest,CarrierOperation.Track);
-        HandleError(trackResponse);
-        return mapResponse(trackResponse,metadata);
-    } catch (error) {
-        throw new ExternalServerError(error?.details?.[0]?.message);
-    }
+    const trackResponse = await ProcessRequest<ITrackResponse>(mappedRequest, CarrierOperation.Track);
+    HandleError(trackResponse);
     
+    return mapResponse(trackResponse, metadata);
 }
