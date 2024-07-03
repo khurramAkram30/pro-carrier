@@ -8,7 +8,7 @@
       "skipLibCheck": true,
       "esModuleInterop": true
   },
-  "types": ["node"],
+  "types": ["node", "jest"],
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules","src/api/__mocks__"]
 }

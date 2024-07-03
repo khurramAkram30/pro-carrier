@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "connect start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +15,10 @@
     "@shipengine/connect": "^4.7.0",
     "@shipengine/connect-carrier-api": "^4.8.7",
     "@shipengine/connect-runtime": "^4.6.2",
+    "@types/jest": "^29.5.12",
     "connect-carrier-api-utils": "^4.4.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.5",
     "typescript": "^5.4.5"
   },
   "dependencies": {

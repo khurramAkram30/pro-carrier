@@ -109,7 +109,6 @@ export const getCarrierError = (error) => {
 
 export const HandleError = (error) => {
     const ErrorDetail: ErrorDetail[] = [];
-    const baseError = "";
     if (error?.Error) {
         ErrorDetail.push(
             {
