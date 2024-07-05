@@ -1,9 +1,10 @@
-import { RegistrationFormSchema } from '../../../src/definitions/forms/registration-form';
+import { SettingsFormSchema } from '../../../src/definitions/forms/setting-form';
+
 
 describe('check registration form Structure', () => {
     test('Check title', () => {
         //Act
-        const result = RegistrationFormSchema.JsonSchema.title;
+        const result = SettingsFormSchema.JsonSchema.title;
 
         //Assert
         expect(result).toBe('Update The Pro Carrier');
@@ -11,7 +12,7 @@ describe('check registration form Structure', () => {
 
     test('Check type', () => {
         //Act
-        const result = RegistrationFormSchema.JsonSchema.type;
+        const result = SettingsFormSchema.JsonSchema.type;
 
         //Assert
         expect(result).toBe('object');
@@ -21,7 +22,7 @@ describe('check registration form Structure', () => {
         //Arrange
         const expected = ["api_key"];
         //Act
-        const result = RegistrationFormSchema.JsonSchema.required;
+        const result = SettingsFormSchema.JsonSchema.required;
 
         //Assert
         expect(result).toStrictEqual(expected);
@@ -37,7 +38,7 @@ describe('check registration form Structure', () => {
         };
 
         //Act
-        const result = RegistrationFormSchema.JsonSchema.properties;
+        const result = SettingsFormSchema.JsonSchema.properties;
 
         //Assert
         expect(result).toStrictEqual(expected);
@@ -55,7 +56,7 @@ describe('check registration form Structure', () => {
         }
         
         //Act
-        const result = RegistrationFormSchema.UiSchema;
+        const result = SettingsFormSchema.UiSchema;
 
         //Assert
         expect(result).toStrictEqual(expected);

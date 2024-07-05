@@ -5,7 +5,7 @@ import { LabelFormatsEnum, LabelSizesEnum, ShippingOptionEnum } from '@shipengin
 import { RegistrationFormSchema } from '../../src/definitions/forms/registration-form';
 import { SettingsFormSchema } from '../../src/definitions/forms/setting-form';
 
-describe("Check Carrier definitions properties", ()  =>{
+describe("Check Carrier definitions properties", () => {
     test('check id', () => {
         //Act
         const result = proCarrier.Id;
@@ -37,7 +37,7 @@ describe("Check Carrier definitions properties", ()  =>{
         //Assert
         expect(result).toBe('procarrier');
     });
-    
+
     test('check Carrier Url', () => {
         //Act
         const result = proCarrier.CarrierUrl;
@@ -58,16 +58,16 @@ describe("Check Carrier definitions properties", ()  =>{
         //Arrange
         const expected = [
             {
-                FromCountry:'GB'
+                FromCountry: 'GB'
             },
             {
-                FromCountry:'GG'
+                FromCountry: 'NL'
             },
             {
-                FromCountry:'JE'
+                FromCountry: 'JE'
             },
             {
-                FromCountry:'NL'
+                FromCountry: 'GG'
             },
         ];
 
@@ -80,7 +80,7 @@ describe("Check Carrier definitions properties", ()  =>{
 
     test('check Label Format', () => {
         //Arrange
-        const expected = [ LabelFormatsEnum.PDF, LabelFormatsEnum.PNG, LabelFormatsEnum.ZPL];
+        const expected = [LabelFormatsEnum.PDF, LabelFormatsEnum.PNG, LabelFormatsEnum.ZPL];
 
         //Act
         const result = proCarrier.LabelFormats;
@@ -105,127 +105,127 @@ describe("Check Carrier definitions properties", ()  =>{
     test('Check Shipping option', () => {
         //Arrange
         const expected = {
-            [ShippingOptionEnum.ContainsAlcohol]: 
+            [ShippingOptionEnum.ContainsAlcohol]:
             {
                 Name: 'Contanins Alcohol',
                 Description: 'Contanins Alcohol'
             },
-            [ShippingOptionEnum.B13ACanada]: 
+            [ShippingOptionEnum.B13ACanada]:
             {
                 Name: 'B13ACanada',
                 Description: 'B13ACanada'
             },
-            [ShippingOptionEnum.BillToThirdParty]: 
+            [ShippingOptionEnum.BillToThirdParty]:
             {
                 Name: 'BillToThirdParty',
                 Description: 'BillToThirdParty'
             },
-            [ShippingOptionEnum.CollectOnDelivery]: 
+            [ShippingOptionEnum.CollectOnDelivery]:
             {
                 Name: 'Collect On Delivery',
                 Description: 'Collect On Delivery'
             },
-            [ShippingOptionEnum.ConsequentialLoss]: 
+            [ShippingOptionEnum.ConsequentialLoss]:
             {
                 Name: 'Consequential Loss',
                 Description: 'Consequential Loss'
             },
-            [ShippingOptionEnum.DangerousGoods]: 
+            [ShippingOptionEnum.DangerousGoods]:
             {
                 Name: 'Dangerous Goods',
                 Description: 'Dangerous Goods'
             },
-            [ShippingOptionEnum.DeliveryMessage]: 
+            [ShippingOptionEnum.DeliveryMessage]:
             {
                 Name: 'Delivery Message',
                 Description: 'Delivery Message'
             },
-            [ShippingOptionEnum.DontPrepayPostage]: 
+            [ShippingOptionEnum.DontPrepayPostage]:
             {
                 Name: 'Dont Prepay Postage',
                 Description: 'Dont Prepay Postage'
             },
-            [ShippingOptionEnum.DryIce]: 
+            [ShippingOptionEnum.DryIce]:
             {
                 Name: 'Dry Ice',
                 Description: 'Dry Ice'
             },
-            [ShippingOptionEnum.EmailNotification]: 
+            [ShippingOptionEnum.EmailNotification]:
             {
                 Name: 'Email Notification',
                 Description: 'Email Notification'
             },
-            [ShippingOptionEnum.FreightClass]: 
+            [ShippingOptionEnum.FreightClass]:
             {
                 Name: 'Freight Class',
                 Description: 'Freight Class'
             },
-            [ShippingOptionEnum.HoldForPickup]: 
+            [ShippingOptionEnum.HoldForPickup]:
             {
                 Name: 'Hold For Pickup',
                 Description: 'Hold For Pickup'
             },
-            [ShippingOptionEnum.IncludeReturnLabel]: 
+            [ShippingOptionEnum.IncludeReturnLabel]:
             {
                 Name: 'Include Return Label',
                 Description: 'Include Return Label'
             },
-            [ShippingOptionEnum.LocalCollect]: 
+            [ShippingOptionEnum.LocalCollect]:
             {
                 Name: 'Local Collect',
                 Description: 'Local Collect'
             },
-            [ShippingOptionEnum.NonMachinable]: 
+            [ShippingOptionEnum.NonMachinable]:
             {
                 Name: 'Non Machinable',
                 Description: 'Non Machinable'
             },
-            [ShippingOptionEnum.NotificationType]: 
+            [ShippingOptionEnum.NotificationType]:
             {
                 Name: 'Notification Type',
                 Description: 'Notification Type'
             },
-            [ShippingOptionEnum.ReleaseNoSignature]: 
+            [ShippingOptionEnum.ReleaseNoSignature]:
             {
                 Name: 'Release No Signature',
                 Description: 'Release No Signature'
             },
-            [ShippingOptionEnum.RequiresAdditionalHandling]: 
+            [ShippingOptionEnum.RequiresAdditionalHandling]:
             {
                 Name: 'Requires Additional Handling',
                 Description: 'Requires Additional Handling'
             },
-            [ShippingOptionEnum.Safeplace]: 
+            [ShippingOptionEnum.Safeplace]:
             {
                 Name: 'Safe place',
                 Description: 'Safe place'
             },
-            [ShippingOptionEnum.SaturdayDelivery]: 
+            [ShippingOptionEnum.SaturdayDelivery]:
             {
                 Name: 'Saturday Delivery',
                 Description: 'Saturday Delivery'
-            }, 
-            [ShippingOptionEnum.SaturdayGuarantee]: 
+            },
+            [ShippingOptionEnum.SaturdayGuarantee]:
             {
                 Name: 'Saturday Guarantee',
                 Description: 'Saturday Guarantee'
-            }, 
-            [ShippingOptionEnum.SmsNotification]: 
+            },
+            [ShippingOptionEnum.SmsNotification]:
             {
                 Name: 'Sms Notification',
                 Description: 'Sms Notification'
-            }, 
-            [ShippingOptionEnum.SpecialHandling]: 
+            },
+            [ShippingOptionEnum.SpecialHandling]:
             {
                 Name: 'Special Handling',
                 Description: 'Special Handling'
-            }, 
-            [ShippingOptionEnum.ThirdPartyConsignee]: 
+            },
+            [ShippingOptionEnum.ThirdPartyConsignee]:
             {
                 Name: 'Third Party Consignee',
-                 Description: 'Third Party Consignee'
-            }, 
-            [ShippingOptionEnum.CarrierInsurance]: 
+                Description: 'Third Party Consignee'
+            },
+            [ShippingOptionEnum.CarrierInsurance]:
             {
                 Name: 'Carrier Insurance',
                 Description: 'Carrier Insurance'
@@ -255,14 +255,14 @@ describe("Check Carrier definitions properties", ()  =>{
 
         //Act
         const result = proCarrier.ShippingServices;
-        
+
         //Assert
         expect(result).toStrictEqual(expected);
     });
 
     test('Check PackageTypes', () => {
         //Arrange
-        const expected = [Packages];
+        const expected = [Packages.Package];
 
         //Act
         const result = proCarrier.PackageTypes;
@@ -284,5 +284,5 @@ describe("Check Carrier definitions properties", ()  =>{
         //Assert
         expect(result).toStrictEqual(expected);
     });
-    
+
 }); 

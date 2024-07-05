@@ -34,8 +34,8 @@ export const mapResponse = (response: ITrackResponse,metadata:InternalReqRegiste
     }
 }
 
-const getStandarizedCode = (trackingEvents: ITrackEvents): StandardizedStatusCodes => {
-    const trackCode = trackingEvents[0].Code ?? [];
+const getStandarizedCode = (trackingEvents: ITrackEvents[]): StandardizedStatusCodes => {
+    const trackCode = trackingEvents?.[0].Code ?? [];
     switch (trackCode) {
         case 'AAY':
         case 'AAM':

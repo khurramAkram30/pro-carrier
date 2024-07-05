@@ -1,7 +1,7 @@
 import { ErrorDetail, ExternalServerError, UnauthorizedError } from "@shipengine/connect-runtime";
 import { InternalReqRegister } from "./internal-models";
 import { Address, ConsigneeAddress, SenderAddress } from "../api/models/create-label-request";
-import { AddressBase, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType, WeightUnit } from "@shipengine/connect-carrier-api";
+import { AddressBase, LabelFormatsEnum, Package, ShipFrom, ShipTo, TaxIdentifier, TaxIdentifierType, TrackingRequest, WeightUnit } from "@shipengine/connect-carrier-api";
 
 
 export const getAuthentication = (data: InternalReqRegister) => {
@@ -99,6 +99,10 @@ export const getLabelFormat = (label_format: string) => {
     else {
         return LabelFormatsEnum.PDF;
     }
+}
+
+export const getIdentifierValue = (request:TrackingRequest, type:string): string => {
+  return request.identifiers.find(p => p.type === type)?.value;
 }
 
 export const getCarrierError = (error) => {

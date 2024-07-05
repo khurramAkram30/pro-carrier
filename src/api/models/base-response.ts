@@ -1,3 +1,3 @@
 export interface BaseResponse {
-    Error: string;
+    Error?: string;
 }

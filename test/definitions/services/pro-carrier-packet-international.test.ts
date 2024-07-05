@@ -1,10 +1,10 @@
 import { LabelSizesEnum, ServiceGradeEnum, ServiceClassEnum, ConfirmationTypeEnum, ServiceAttributesEnum } from '@shipengine/connect-carrier-api';
-import { ProCarrierParcelExpressInternational } from '../../../src/definitions/services';
+import { ProCarrierParcelPacketInternational } from '../../../src/definitions/services';
 
 describe('Check service definitions properties - Demo Service', () => {
     test('Check Id', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.Id;
+        const result = ProCarrierParcelPacketInternational.Id;
 
         //Assert
         expect(result).toBe('d0eab36d-3e0a-43a7-b304-54ec82e8cb31');
@@ -12,7 +12,7 @@ describe('Check service definitions properties - Demo Service', () => {
 
     test('Check Name', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.Name;
+        const result = ProCarrierParcelPacketInternational.Name;
 
         //Assert
         expect(result).toBe('Pro Carrier Parcel Packet International');
@@ -20,7 +20,7 @@ describe('Check service definitions properties - Demo Service', () => {
 
     test('Check ApiCode', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.ApiCode;
+        const result = ProCarrierParcelPacketInternational.ApiCode;
 
         //Assert
         expect(result).toBe('procarrier_pcpt_intl');
@@ -28,7 +28,7 @@ describe('Check service definitions properties - Demo Service', () => {
 
     test('Check Code', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.Code;
+        const result = ProCarrierParcelPacketInternational.Code;
 
         //Assert
         expect(result).toBe('PCPT');
@@ -36,7 +36,7 @@ describe('Check service definitions properties - Demo Service', () => {
     
     test('Check Abbreviation', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.Abbreviation;
+        const result = ProCarrierParcelPacketInternational.Abbreviation;
 
         //Assert
         expect(result).toBe('pc_parcel_Pack_intl');
@@ -44,7 +44,7 @@ describe('Check service definitions properties - Demo Service', () => {
 
     test('Check International flag', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.International;
+        const result = ProCarrierParcelPacketInternational.International;
 
         //Assert
         expect(result).toBe(true);
@@ -52,7 +52,7 @@ describe('Check service definitions properties - Demo Service', () => {
 
     test('Check Class', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.Class;
+        const result = ProCarrierParcelPacketInternational.Class;
 
         //Assert
         expect(result).toBe(ServiceClassEnum.Unspecified);
@@ -60,7 +60,7 @@ describe('Check service definitions properties - Demo Service', () => {
 
     test('Check Grade', () => {
         //Act
-        const result = ProCarrierParcelExpressInternational.Grade;
+        const result = ProCarrierParcelPacketInternational.Grade;
 
         //Assert
         expect(result).toBe(ServiceGradeEnum.Unspecified);
@@ -71,7 +71,7 @@ describe('Check service definitions properties - Demo Service', () => {
         const expected = [LabelSizesEnum.Inches4x6];
 
         //Act
-        const result = ProCarrierParcelExpressInternational.SupportedLabelSizes;
+        const result = ProCarrierParcelPacketInternational.SupportedLabelSizes;
 
         //Assert
         expect(result).toStrictEqual(expected);
@@ -79,10 +79,13 @@ describe('Check service definitions properties - Demo Service', () => {
 
     test('Check SupportedCountries', () => {
         //Arrange
-        const expected = [{ FromCountry: 'GB' },  { FromCountry:'NL' }];
+        const expected = [
+            { FromCountry: 'GB' }, 
+            { FromCountry:'NL' }
+        ];
 
         //Act
-        const result = ProCarrierParcelExpressInternational.SupportedCountries;
+        const result = ProCarrierParcelPacketInternational.SupportedCountries;
 
         //Assert
         expect(result).toStrictEqual(expected);
@@ -95,7 +98,7 @@ describe('Check service definitions properties - Demo Service', () => {
         ];
 
         //Act
-        const result = ProCarrierParcelExpressInternational.ServiceAttributes;
+        const result = ProCarrierParcelPacketInternational.ServiceAttributes;
 
         //Assert
         expect(result).toStrictEqual(expected);
@@ -104,11 +107,11 @@ describe('Check service definitions properties - Demo Service', () => {
     test('Check ConfirmationTypes', () => {
         //Arrange
         const expected = [
-            { Name: 'No Confirmation Required', Type: ConfirmationTypeEnum.None },
+            { Name: "No Confirmation Required", Type: ConfirmationTypeEnum.None }
         ];
 
         //Act
-        const result = ProCarrierParcelExpressInternational.ConfirmationTypes;
+        const result = ProCarrierParcelPacketInternational.ConfirmationTypes;
 
         //Assert
         expect(result).toStrictEqual(expected);

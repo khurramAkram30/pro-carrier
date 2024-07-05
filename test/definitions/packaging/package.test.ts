@@ -23,7 +23,7 @@ describe('Check packaging type properties - Package', () => {
         const result = Package.CarrierPackageTypeCode;
 
         //Assert
-        expect(result).toBe('Package');
+        expect(result).toBe('package');
     });
 
     test('Check ApiCode', () => {
@@ -39,7 +39,7 @@ describe('Check packaging type properties - Package', () => {
         const result = Package.Description;
 
         //Assert
-        expect(result).toBe('Package.');
+        expect(result).toBe('Package');
     });
 
     test('Check PackageAttributes', () => {

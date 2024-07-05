@@ -5,6 +5,8 @@ export interface ICreateLabelResponse extends BaseResponse{
     Shipment: IShipment;
 }
 interface IShipment {
+    Id?: string;
+    TimeLabel?: string
     TrackingNumber: string;
     ShipperReference?: string;
     DisplayId?: string;

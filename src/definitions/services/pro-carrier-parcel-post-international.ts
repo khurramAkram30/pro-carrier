@@ -20,6 +20,6 @@ export const  ProCarrierParcelPostInternational: ShippingService = {
     ],
     ServiceAttributes: [ ServiceAttributesEnum.Tracking ],
     ConfirmationTypes: [
-        { Name: "No Confirmation Requird", Type: ConfirmationTypeEnum.None }
+        { Name: "No Confirmation Required", Type: ConfirmationTypeEnum.None }
     ]
 };

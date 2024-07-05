@@ -1,3 +1,4 @@
+import { ICreateLabelResponse } from "./create-label-response";
 import { IGetShipmentInvoiceRequest } from "./get-shipment-interface";
 
 export interface ITrackRequest extends IGetShipmentInvoiceRequest{
@@ -9,6 +10,7 @@ export interface ITrackResponse {
    Shipment: ITrackShipment;
 }
 interface ITrackShipment {
+    Id?: string;
     TrackingNumber: string;
     ShipperReference?: string;
     DisplayId?: string;
@@ -25,7 +27,7 @@ interface ITrackShipment {
     WeightUnit: string;
     ShipperAddress: ITrackAddress;
     ConsigneeAddress: ITrackAddress;
-    Events: ITrackEvents;
+    Events: ITrackEvents[];
 }
 
 export interface ITrackAddress {
