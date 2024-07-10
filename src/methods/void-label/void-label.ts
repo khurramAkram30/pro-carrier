@@ -1,5 +1,4 @@
 import { VoidLabelsRequest, VoidLabelsResponse, VoidResponse } from "@shipengine/connect-carrier-api";
-import { BadRequestError, ExternalServerError } from "@shipengine/connect-runtime";
 import { mapRequest } from "./map-request";
 import { IVoidLabelResponse } from "../../api/models/void-label-interface";
 import { CarrierOperation } from "../../helpers/constants";
@@ -13,7 +12,7 @@ export const VoidLabels = async (request: VoidLabelsRequest): Promise<VoidLabels
 
     for (let i = 0; i < request.void_requests.length; i++) {
         let error:string;
-        const voidReq = request.void_requests[i];
+        const voidReq = request.void_requests[i]; 
         const trackingNumber = voidReq?.tracking_number ?? "";
         const mappedRequest = mapRequest(trackingNumber, metadata);
         const voidLabelResponse = await ProcessRequest<IVoidLabelResponse>(mappedRequest, CarrierOperation.VoidLabel);

@@ -1,61 +1,46 @@
 import { CreateLabelRequest, DimensionDetails, Dimensions, Package, WeightDetails, WeightUnit } from "@shipengine/connect-carrier-api";
 import { TermsOfTradeCode } from "@shipengine/connect-carrier-api/lib/models/inconterms/terms-of-trade-code";
 import { BadRequestError } from "@shipengine/connect-runtime";
-import { MaximumGirth, MaximumLength, MaximumSum, MaximumWeight, ONE_POUND, SERVICE_API_CODES, SERVICE_CODES } from "../../helpers/constants";
+import { MaximumGirth, MaximumLength, MaximumDimensionSum, MaximumWeight, ONE_POUND, SERVICE_API_CODES } from "../../helpers/constants";
 
 export const validate = (request: CreateLabelRequest) => {
-  if (request?.packages?.length > 1) {
-    throw new BadRequestError("multipackage not supported");
-  }
+
+  const termsOfTradeCode = request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase();
+  const customItems = request.packages?.[0]?.customs?.customs_items;
 
   if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelPlus) {
-    if (request?.packages?.[0].customs?.terms_of_trade_code !== TermsOfTradeCode.DDP) {
-      throw new BadRequestError("Only DDP is allowed");
+    if (termsOfTradeCode !== TermsOfTradeCode.DDP) {
+      throw new BadRequestError(`Only DDP is allowed for this service: ${SERVICE_API_CODES.ProCarrierParcelPlus}`);
     }
   }
   else {
-    if (request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDU &&
-      request?.packages?.[0].customs?.terms_of_trade_code.toLowerCase() != TermsOfTradeCode.DDP) {
+    if (termsOfTradeCode != TermsOfTradeCode.DDU && termsOfTradeCode != TermsOfTradeCode.DDP) {
       throw new BadRequestError("Only DDP and DDU are valid for terms of trade code");
     }
   }
 
-  if (!request?.ship_from?.country_code) {
-    throw new BadRequestError("ShipFrom.Countrycode: It is mandatory");
-  }
-
-  if (request.packages?.[0]?.customs?.customs_items) {
-    const customItems = request.packages?.[0]?.customs?.customs_items;
+  if (customItems) {
     customItems.forEach((items) => {
-      if (parseInt(items.value.amount) < 0) {
-        throw new BadRequestError("Custom items amount must be positive integer");
+      if (parseInt(items.value.amount) <= 0) {
+        throw new BadRequestError("Custom items amount must be present");
       }
     });
   }
 
-  if (request?.service_code === SERVICE_API_CODES.ProCarrierParcelExpress ||
-    request?.service_code === SERVICE_API_CODES.ProCarrierParcelPacket ||
-    request?.service_code === SERVICE_API_CODES.ProCarrierParcelPlus ||
-    request?.service_code === SERVICE_API_CODES.ProCarrierParcelPost) {
-    ValidatePackage(request);
-  }
-};
-
-const ValidatePackage = (request: CreateLabelRequest) => {
   if (request?.packages?.[0]) {
     HandleWeightAndDimension(request.packages[0], request.service_code);
   }
 };
 
-const HandleWeightAndDimension = (request: Package, servisCode: string) => {
+const HandleWeightAndDimension = (request: Package, serviceCode: string) => {
   if (request?.weight_details?.source_weight &&
     request?.weight_details?.source_weight_unit) {
-    ValidateWeight(request.weight_details.source_weight, request.weight_details.source_weight_unit, getMaximumWeight(servisCode));
+    ValidateWeight(request.weight_details.source_weight, request.weight_details.source_weight_unit, getMaximumWeight(serviceCode));
   }
   if (request?.dimension_details?.dimensions_in_centimeters) {
     validateDimension(request?.dimension_details.dimensions_in_centimeters,
-      getMaximumLength(servisCode),
-      servisCode);
+      getMaximumLength(serviceCode),
+      serviceCode);
   }
 
 };
@@ -71,9 +56,9 @@ export const ValidateWeight = (sourceWeight: number, sourceWeightUnit: WeightUni
 };
 
 export const validateDimension = (dimension: Dimensions, maxLength: number, serviceCode?: string) => {
-  const height = dimension?.height || null;
-  const width = dimension?.width || null;
-  const length = dimension?.length || null;
+  const height = dimension?.height || 0;
+  const width = dimension?.width || 0;
+  const length = dimension?.length || 0;
   const girth = width + height * 2;
   const sum = height + width + length;
 
@@ -87,20 +72,20 @@ export const validateDimension = (dimension: Dimensions, maxLength: number, serv
       break;
     case SERVICE_API_CODES.ProCarrierParcelExpress:
       valaidateGirth(girth,MaximumGirth.ProCarrierParcelExpress);  
-      valaidateSum(sum,MaximumSum.ProCarrierParcelExpress);
+      valaidateSum(sum,MaximumDimensionSum.ProCarrierParcelExpress);
       break;
     case SERVICE_API_CODES.ProCarrierParcelPacket:
-      valaidateSum(sum,MaximumSum.ProCarrierParcelPacket);
+      valaidateSum(sum,MaximumDimensionSum.ProCarrierParcelPacket);
       break;
     case SERVICE_API_CODES.ProCarrierParcelPlus:
-      valaidateSum(sum,MaximumSum.ProCarrierParcelPlus);
+      valaidateSum(sum,MaximumDimensionSum.ProCarrierParcelPlus);
       break;
     default:
       break;
   }
 };
 
-const valaidateSum = (totalSum: number, maximumSum:MaximumSum) =>  {
+const valaidateSum = (totalSum: number, maximumSum:MaximumDimensionSum) =>  {
   if (totalSum > maximumSum) {
     throw new BadRequestError("Exceed the Limit of girth");
   }
@@ -123,7 +108,6 @@ export const getMaximumWeight = (serviceCode: string) => {
     case SERVICE_API_CODES.ProCarrierParcelPost:
       return MaximumWeight.ProCarrierParcelPost;
     default:
-      throw new Error("Invalid service code");
   }
 };
 
@@ -138,7 +122,6 @@ export const getMaximumLength = (serviceCode: string) => {
     case SERVICE_API_CODES.ProCarrierParcelPost:
       return MaximumLength.ProCarrierParcelPost;
     default:
-      throw new Error("Invalid service code");
   }
 };
 

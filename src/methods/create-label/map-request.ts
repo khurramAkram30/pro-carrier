@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios"
-import { COMMANDS, CUSTOM_CONTENTS, SERVICE_API_CODES, TEST_URL } from "../../helpers/constants";
+import { CARRIER_METHODS, CUSTOM_CONTENTS, SERVICE_API_CODES, TEST_URL } from "../../helpers/constants";
 import { CreateLabelReq, Products, Shipments} from "../../api/models/create-label-request";
 import { 
     getAuthentication, 
@@ -7,20 +7,23 @@ import {
     getSenderAddress,
     getConsigneeAddress,
     getWeight,
-    getWeightUnit
+    getWeightUnit,
+    HandleError
     } from "../../helpers/utils";
 import { 
     CreateLabelRequest, 
     Customs,
+    CustomsContentTypes,
     LabelFormatsEnum,
     ShipFrom,
     VoidLabelsRequest, 
     } from "@shipengine/connect-carrier-api";
-import { IGetShipmentInvoiceRequest } from "../../api/models/get-shipment-interface";
+import { IGetShipmentInvoiceRequest, IGetShipmentResponse } from "../../api/models/get-shipment-interface";
 import { ICreateLabelResponse } from "../../api/models/create-label-response";
 import { TermsOfTradeCode } from "@shipengine/connect-carrier-api/lib/models/inconterms/terms-of-trade-code";
 import { v4 as uuidv4 } from 'uuid';
 import { InternalReqRegister } from "../../helpers/internal-models";
+import { VoidLabels } from "../void-label/void-label";
 
 export const mapRequest = (request: CreateLabelRequest): AxiosRequestConfig => { 
     return {
@@ -30,7 +33,7 @@ export const mapRequest = (request: CreateLabelRequest): AxiosRequestConfig => {
     };
 }
 
-export const isInternationalOrDomestic = (request: CreateLabelRequest): boolean =>{
+export const isInternationals = (request: CreateLabelRequest): boolean =>{
     const shipTo = request?.ship_to;
     const shipFrom = request?.ship_from;   
     if (shipTo.country_code !== shipFrom.country_code ){
@@ -41,7 +44,7 @@ export const isInternationalOrDomestic = (request: CreateLabelRequest): boolean 
     }
 }
 
-export const mapGetShipment = (request:CreateLabelRequest, response: ICreateLabelResponse) : AxiosRequestConfig => {
+export const mapGetShipmentInvoiceRequest = (request:CreateLabelRequest, response: ICreateLabelResponse) : AxiosRequestConfig => {
     
     return {
         url:TEST_URL,
@@ -53,7 +56,7 @@ export const mapGetShipment = (request:CreateLabelRequest, response: ICreateLabe
 const getShipmentInvoice = (request:CreateLabelRequest, response:ICreateLabelResponse) : IGetShipmentInvoiceRequest => {
     return {
         Apikey: getAuthentication(request.metadata),
-        Command: COMMANDS.GetShipment,
+        Command: CARRIER_METHODS.GetShipment,
         Shipment: getShipmentData(response)
     } 
 }
@@ -67,7 +70,7 @@ const getShipmentData = (response:ICreateLabelResponse) => {
  
 const orderShipment = (data: CreateLabelRequest): CreateLabelReq => ({
         Apikey: getAuthentication(data?.metadata),
-        Command: COMMANDS.OrderShipments,
+        Command: CARRIER_METHODS.OrderShipments,
         Shipment: getOrderShipment(data)
 });
 
@@ -100,51 +103,43 @@ const getValue = (packageCustoms: Customs): number => {
     const customItem = packageCustoms?.customs_items ?? [];
     let totalValue : number = 0;
     customItem.map(items => {
-        totalValue += parseFloat(items.value?.amount) * (items.quantity);
+        totalValue += parseFloat(items.value?.amount) * (items.quantity ?? 1);
         
     });
     return totalValue;
 };
 
 const getCurrency = (packageCustoms: Customs): string => {
-    const currency = packageCustoms?.customs_items[0]?.value?.currency;
-    if(currency){
-        return currency;
-    }
-    else{
-        return "GBP";
-    }
+    return packageCustoms?.customs_items[0]?.value?.currency ?? "GBP"
 };
 
 const getCustomsDuty = (packageCustoms:Customs, ser_code:string): string => {
-    const termsOfTradeCode: string = packageCustoms?.terms_of_trade_code?.toUpperCase() ?? "" ;
+    const termsOfTradeCode: string = packageCustoms?.terms_of_trade_code ?? "" ;
     if(termsOfTradeCode === TermsOfTradeCode.DDP){
         return TermsOfTradeCode.DDP;
     }
-    if((ser_code.toUpperCase() === SERVICE_API_CODES.ProCarrierParcelPlus || ser_code === SERVICE_API_CODES.ProCarrierParcelPlusInternational) &&
-        (!termsOfTradeCode)){
+    if((ser_code === SERVICE_API_CODES.ProCarrierParcelPlus) && (!termsOfTradeCode)){
         return TermsOfTradeCode.DDP;
     }
-    else{
-        return  TermsOfTradeCode.DDU;
-    }
+    return  TermsOfTradeCode.DDU;
     
-}
-const getDeclaration = (packageCustoms:Customs): string => {
+};  
+
+const getDeclaration = (packageCustoms: Customs): string => {
     const content = packageCustoms.contents.toLowerCase() ?? "";
-    if(content === CUSTOM_CONTENTS.Document){
-        return CUSTOM_CONTENTS.Document.charAt(0).toUpperCase();
+    if(content === CustomsContentTypes.Documents){
+        return CUSTOM_CONTENTS.Document;
     }
-    if(content === CUSTOM_CONTENTS.Sample){
+    if(content === CustomsContentTypes.Sample){
         return CUSTOM_CONTENTS.CommercialSample;
     }
-    if(content === CUSTOM_CONTENTS.gift){
-        return CUSTOM_CONTENTS.gift.charAt(0).toUpperCase();
+    if(content === CustomsContentTypes.Gift){
+        return CUSTOM_CONTENTS.gift;
     }
-    if(content === CUSTOM_CONTENTS.returnedgoods){
+    if(content === CustomsContentTypes.ReturnedGoods){
         return CUSTOM_CONTENTS.ReturnedGoods;
     }
-    if(content === CUSTOM_CONTENTS.other){
+    if(content === CustomsContentTypes.Other){
         return CUSTOM_CONTENTS.Personal;
     }
     else{
@@ -156,7 +151,7 @@ const getProducts = (packageCustoms: Customs): Products[] => {
     const content = packageCustoms?.customs_items ?? [];
     let contentBody = [];
     content.forEach((customItem) => {
-        let itemQuantity =  customItem?.quantity;
+        let itemQuantity =  customItem?.quantity ?? 1;
         let items : Products = {
             Description: customItem?.description,
             Sku: customItem?.sku,
@@ -170,6 +165,13 @@ const getProducts = (packageCustoms: Customs): Products[] => {
     });
     
     return contentBody;
+}
+
+export const getShipmentError = (request: IGetShipmentResponse | ICreateLabelResponse, ShipFrom:ShipFrom , metadata:InternalReqRegister) =>{
+    const trackingNumber = request.Shipment.TrackingNumber;
+    const voidLableReqMapping = VoidLabelMapping(trackingNumber, ShipFrom , metadata);
+    VoidLabels(voidLableReqMapping);
+    HandleError(request);
 }
 
 export const VoidLabelMapping = (trackingNumber: string, shipFrom: ShipFrom ,metadata: InternalReqRegister): VoidLabelsRequest => {

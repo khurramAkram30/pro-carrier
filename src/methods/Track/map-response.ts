@@ -1,42 +1,43 @@
 import { StandardizedStatusCodes, TrackingResponse } from "@shipengine/connect-carrier-api";
-import { ITrackEvents, ITrackResponse } from "../../api/models/track-interface";
+import { ITrackResponse } from "../../api/models/track-interface";
 import { CARRIER_NAME } from "../../helpers/constants";
 import { InternalReqRegister } from "../../helpers/internal-models";
 
 export const mapResponse = (response: ITrackResponse,metadata:InternalReqRegister): TrackingResponse => {
-    const eventTracking = response.Shipment.Events
+    const eventSortDesc = response.Shipment.Events.sort(
+        (a,b) => new Date(b.DateTime).getTime() - new Date(a.DateTime).getTime());
+    const latestEvent = eventSortDesc[0];
     return {
         tracking_info: {
             carrier_name: CARRIER_NAME,
             tracking_number: response.Shipment.TrackingNumber,
-            standardized_status_code: getStandarizedCode(eventTracking),
-            carrier_status_code: response?.Shipment?.Events?.[0]?.Code,
-            carrier_status_description: response?.Shipment?.Events?.[0]?.Description,
+            standardized_status_code: getStandarizedCode(latestEvent?.Code),
+            carrier_status_code: latestEvent.Code,
+            carrier_status_description: latestEvent?.Description,
             estimated_delivery_datetime: "",
-            actual_delivery_datetime: response?.Shipment?.Events?.[0]?.DateTime,
+            actual_delivery_datetime: latestEvent?.DateTime,
             weight: response.Shipment.Weight,
             service: {
                 code: response.Shipment.Service
             },
-            events: [
-                {
-                    event_datetime: response.Shipment.Events[0].DateTime,
-                    event_code: response.Shipment.Events[0].Code,
-                    event_datetime_local: response.Shipment.Events[0].DateTime,
-                    description: response.Shipment.Events[0].Description,
-                    country: response?.Shipment?.Events?.[0]?.Country ?? undefined,
-                    status_code:getStandarizedCode(eventTracking)
-                }
-            ],
+            events: 
+            eventSortDesc?.map((evt) => ({
+                event_datetime: evt.DateTime,
+                event_code: evt.Code,
+                event_datetime_local: evt.DateTime,
+                description: evt.Description,
+                country: evt?.Country ?? undefined,
+                status_code:getStandarizedCode(evt.Code)
+            })
+            ),
             
         },
         metadata:metadata
     }
 }
 
-const getStandarizedCode = (trackingEvents: ITrackEvents[]): StandardizedStatusCodes => {
-    const trackCode = trackingEvents?.[0].Code ?? [];
-    switch (trackCode) {
+const getStandarizedCode = (trackingCode:string): StandardizedStatusCodes => {
+    switch (trackingCode) {
         case 'AAY':
         case 'AAM':
         case 'ACZ':
@@ -84,5 +85,7 @@ const getStandarizedCode = (trackingEvents: ITrackEvents[]): StandardizedStatusC
             return StandardizedStatusCodes.Delivered;
         case 'ABZ':
             return StandardizedStatusCodes.DeliveredToServicePoint
+        default:
+            return StandardizedStatusCodes.Unknown;
     }
 }

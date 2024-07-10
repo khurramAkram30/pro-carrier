@@ -3,8 +3,10 @@ import { CarrierOperation } from "../../helpers/constants";
 import { RegisterSuccessResponse, RegisterErrorResponse } from "./responses/register-response"; 
 import { track } from "./responses/track-response";
 import { voidLabelErrorResponse, voidLabelRequiredResponse, voidLabelSuccessResponse } from "./responses/void-label-response";
+import { CreateLabelResponse, GetShipmentResponse } from "./responses/create-label-response";
 
 export const ProcessRequest = async(requestConfig: AxiosRequestConfig, operationName: CarrierOperation) => {
+    
     switch(operationName){
         case CarrierOperation.Register:
             if(requestConfig?.data?.Apikey !== 'Apikey'){
@@ -13,6 +15,10 @@ export const ProcessRequest = async(requestConfig: AxiosRequestConfig, operation
             else{
                 return RegisterSuccessResponse;
             }    
+        case CarrierOperation.CreateLabel:
+            return CreateLabelResponse;
+        case CarrierOperation.GetShipment:
+            return GetShipmentResponse;
         case CarrierOperation.Track:
             return track;
         case CarrierOperation.VoidLabel:

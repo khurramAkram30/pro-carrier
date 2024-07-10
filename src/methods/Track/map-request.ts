@@ -1,6 +1,6 @@
 import { TrackingIdentifier, TrackingRequest } from "@shipengine/connect-carrier-api";
 import { AxiosRequestConfig } from "axios";
-import { COMMANDS, TEST_URL } from "../../helpers/constants";
+import { CARRIER_METHODS, TEST_URL } from "../../helpers/constants";
 import { ITrackRequest } from "../../api/models/track-interface";
 import { getAuthentication } from "../../helpers/utils";
 import { GetShipments } from "../../api/models/get-shipment-interface";
@@ -16,7 +16,7 @@ export const mapRequest = (request: TrackingRequest):AxiosRequestConfig => {
 const GetTrack = (request: TrackingRequest): ITrackRequest => {
     return{
         Apikey: getAuthentication(request.metadata),
-        Command: COMMANDS.TrackShipment,
+        Command: CARRIER_METHODS.TrackShipment,
         Shipment: getTackShipment(request.identifiers)
     }
 }

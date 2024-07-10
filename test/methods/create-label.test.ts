@@ -1,9 +1,8 @@
 import { CreateLabel } from '../../src/methods/create-label/create-label';
 import { InternalReqRegister } from '../../src/helpers/internal-models';
-import { AddressResidentialIndicator, CreateLabelRequest, Currency, CustomsContentTypes, DimensionUnit, DocumentFormat, LabelLayouts, TaxIdentifierType, WeightUnit } from '@shipengine/connect-carrier-api';
+import { AddressResidentialIndicator, CreateLabelRequest, CustomsContentTypes, DimensionUnit, DocumentFormat, LabelLayouts, TaxIdentifierType, WeightUnit } from '@shipengine/connect-carrier-api';
 import { TermsOfTradeCode } from '@shipengine/connect-carrier-api/lib/models/inconterms/terms-of-trade-code';
 import { SERVICE_API_CODES } from '../../src/helpers/constants';
-import { ValidateWeight, getMaximumWeight } from '../../src/methods/create-label/validate';
 
 jest.mock('../../src/api/api-communicator');
 
@@ -213,15 +212,15 @@ beforeEach(() => {
             is_eu: false,
             instructions: "",
             address_metadata: {},
-            address_lines: [
-                "29 Ayres Rd",
-                "Old Trafford",
+        address_lines: [
+                "C. de la Torrecilla del Leal",
+                "12",
 
             ],
-            city_locality: "Manchester",
-            state_province: "Manchester",
-            postal_code: "M16 9WA",
-            country_code: "GB"
+            city_locality: "Madrid",
+            state_province: "Madrid",
+            postal_code: "28012",
+            country_code: "ES"
         },
         is_return_label: true,
         advanced_options: {},
@@ -231,30 +230,14 @@ beforeEach(() => {
 });
 
 describe('unit test for createLabel method Validations', () => {
-    test('Package is not greater than 1', async () => {
-        //Arrange
-        createLabelRequest.packages.push(
-            {
-                insured_value: {
-                    amount: "",
-                    currency: ""
-                },
-            }
-        );
-        //Act
-        const result = await CreateLabel(createLabelRequest).catch(e => e);
-        //Assert
-        expect(result.message).toBe('multipackage not supported');
-    });
-
-    test('Service Code = PCPL & terms_of_trade_code != DDP', async () => {
+   test('Service Code = PCPL & terms_of_trade_code != DDP', async () => {
         //Arrange
         createLabelRequest.service_code = SERVICE_API_CODES.ProCarrierParcelPlus;
         createLabelRequest.packages[0].customs!.terms_of_trade_code = TermsOfTradeCode.DDU;
         //Act
         const result = await CreateLabel(createLabelRequest).catch(e => e);
         //Assert
-        expect(result.message).toBe('Only DDP is allowed');
+        expect(result.message).toBe('Only DDP is allowed for this service: PCPL');
 
     });
 
@@ -268,16 +251,6 @@ describe('unit test for createLabel method Validations', () => {
 
     });
 
-    test('Ship_from.Country Code is mandatory', async () => {
-        //Arrange
-        createLabelRequest.ship_from.country_code = "";
-        //Act
-        const result = await CreateLabel(createLabelRequest).catch(e => e);
-        //Assert
-        expect(result.message).toBe('ShipFrom.Countrycode: It is mandatory');
-
-    });
-
     test('Custom item amount must be positive value', async () => {
         createLabelRequest.packages[0].customs?.customs_items.map(async (items) => {
             //Arrange
@@ -285,7 +258,7 @@ describe('unit test for createLabel method Validations', () => {
             //Act
             const result = await CreateLabel(createLabelRequest).catch(e => e);
             //Assert
-            expect(result.message).toBe('Custom items amount must be positive integer');
+            expect(result.message).toBe('Custom items amount must be present');
         });
     });
 
@@ -302,7 +275,40 @@ describe('unit test for createLabel method Validations', () => {
 });
 
 describe('Check createLabel Response Mapping', () => { 
-    test('check tracking number', () => { 
-        
+    test('check tracking number', async() => { 
+        //Act
+        const result = await CreateLabel(createLabelRequest);
+
+        //Assert
+        expect(result.tracking_number).toBe('DG30561009727');
+    });
+
+    test('check trackable Status', async() => { 
+        //Act
+        const result = await CreateLabel(createLabelRequest);
+
+        //Assert
+        expect(result.trackable).toBe(true);
+    });
+
+    test('check Document Format', async() => { 
+        //Act
+        const result = await CreateLabel(createLabelRequest);
+
+        //Assert
+        expect(result?.packages?.[0].documents?.[0].format).toBe(DocumentFormat.Pdf);
+    });
+    
+    test('check metadata', async() => { 
+        //Arrange
+        const metadata = {
+            api_key: "Apikey"
+        }
+
+        //Act
+        const result = await CreateLabel(createLabelRequest);
+
+        //Assert
+        expect(result.metadata).toStrictEqual(metadata);
     })
 });

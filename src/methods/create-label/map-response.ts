@@ -1,11 +1,10 @@
-import { CreateLabelResponse, Document, DocumentFormat, DocumentType, LabelPackage, Package, PackageType } from "@shipengine/connect-carrier-api";
+import { CreateLabelRequest, CreateLabelResponse, Document, DocumentFormat, DocumentType, LabelPackage, Package, PackageType } from "@shipengine/connect-carrier-api";
 import { ICreateLabelResponse } from "../../api/models/create-label-response";
-import { InternalReqRegister } from "../../helpers/internal-models";
 import { IGetShipmentResponse } from "../../api/models/get-shipment-interface";
 
 export const mapResponse = (
     orderShipment: ICreateLabelResponse,
-    metadata: InternalReqRegister,
+    request: CreateLabelRequest,
     getShipmentInvoice?: IGetShipmentResponse,
 ): CreateLabelResponse => {
     const documents: Document[] = getShipmentInvoice?.Shipment ? [
@@ -28,12 +27,12 @@ export const mapResponse = (
         }
     ]
     return {
-        transaction_id: "",
+        transaction_id: request?.transaction_id,
         tracking_number: orderShipment?.Shipment?.TrackingNumber,
         documents: documents,
         trackable: true,
         packages: packages,
-        metadata: metadata
+        metadata: request?.metadata
     }
 }
 

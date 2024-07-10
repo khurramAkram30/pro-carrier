@@ -5,15 +5,15 @@ import { mapRequest } from "./map-request";
 import { ProcessRequest } from "../../api/api-communicator";
 import { mapResponse } from "./map-response";
 import { InternalReqRegister } from "../../helpers/internal-models";
-import { getCarrierError } from "../../helpers/utils";
+import { checkCarrierError } from "../../helpers/utils";
 
 
 export const Register = async (request: RegisterRequest): Promise<RegisterResponse> => {
     const registrationInfo = <InternalReqRegister>request.registration_info || {};
     validate(registrationInfo);
-    const mapedRequest = mapRequest(registrationInfo);
-    const response = await ProcessRequest(mapedRequest, CarrierOperation.Register);
-    getCarrierError(response);
+    const mappedRequest = mapRequest(registrationInfo);
+    const response = await ProcessRequest(mappedRequest, CarrierOperation.Register);
+    checkCarrierError(response);
 
     return mapResponse(registrationInfo);
 }

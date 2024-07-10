@@ -29,7 +29,7 @@ describe('Unit test of tracking method', () => {
         const result = await Track(trackingRequest).catch(e => e);
 
         // Assert
-        expect(result.message).toBe('Please provide tracking_number');
+        expect(result.message).toBe('Please provide Tracking Number.');
     });
 
     test("Get tracking number from API ", async () => {

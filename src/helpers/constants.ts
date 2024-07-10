@@ -12,7 +12,7 @@ export const CARRIER_URL = 'https://weareprocarrier.com/';
 export const TRACKING_URL = 'https://tracking.weareprocarrier.com/?tn=[track_number]';
 export const CARRIER_NAME = "ProCarrier";
 
-export const COMMANDS = Object.freeze({
+export const CARRIER_METHODS = Object.freeze({
     OrderShipments: 'OrderShipment',
     GetShipment: 'GetShipmentInvoice',
     VoidShipment: 'VoidShipment',
@@ -31,19 +31,19 @@ export const SERVICE_API_CODES = Object.freeze({
 });
 
 export const SERVICE_CODES = [
-    SERVICE_API_CODES.ProCarrierParcelPacket,
-    SERVICE_API_CODES.ProCarrierParcelExpress,
-    SERVICE_API_CODES.ProCarrierParcelPlus,
-    SERVICE_API_CODES.ProCarrierParcelPost,
+    {"serviceCode": SERVICE_API_CODES.ProCarrierParcelPacket},
+    {"serviceCode": SERVICE_API_CODES.ProCarrierParcelExpress},
+    {"serviceCode": SERVICE_API_CODES.ProCarrierParcelPlus},
+    {"serviceCode": SERVICE_API_CODES.ProCarrierParcelPost}
 ];
 
 
 export const CUSTOM_CONTENTS = Object.freeze({
-    Sample: 'sample',
+    Sample: 'Sample',
     CommercialSample: 'CommercialSample',
-    Document: 'documents',
-    gift: 'gift',
-    other: 'other',
+    Document: 'Documents',
+    gift: 'Gift',
+    other: 'Other',
     Personal: 'Personal',
     SaleOfGood: 'SaleOfGood',
     returnedgoods: 'returned_goods',
@@ -64,7 +64,7 @@ export enum MaximumLength {
     ProCarrierParcelPlus = 120
 }
 
-export enum MaximumSum {
+export enum MaximumDimensionSum {
     ProCarrierParcelPacket = 90,
     ProCarrierParcelExpress = 180,
     ProCarrierParcelPlus = 150
